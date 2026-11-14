@@ -10,8 +10,8 @@ Write your name and GitHub username in the table in your first PR.
 
 | WS | Name | Owner | Folder you own | You produce | Guide |
 |---|---|---|---|---|---|
-| WS1 | Radar ingest | _name (@github)_ | `src/blindspot/s1_ingest/` | `stack.nc` | [WS1](workstreams/WS1_radar_ingest.md) |
-| WS2 | Change detection | Falih (@Falih2007) | `src/blindspot/s2_change/` | `change.nc`, `patches.geojson`, `timeseries.json`, `synthetic_curve.json` | [WS2](workstreams/WS2_change_detection.md) |
+| WS1 | Radar ingest | Falih (@Falih2007) | `src/blindspot/s1_ingest/` | `stack.nc` | [WS1](workstreams/WS1_radar_ingest.md) |
+| WS2 | Change detection | name | `src/blindspot/s2_change/` | `change.nc`, `patches.geojson`, `timeseries.json`, `synthetic_curve.json` | [WS2](workstreams/WS2_change_detection.md) |
 | WS3 | Fire record | _name_ | `src/blindspot/s3_fire/` | `hotspots.geojson`, `crosscheck.csv`, `crosscheck_stats.json` | [WS3](workstreams/WS3_fire_record.md) |
 | WS4 | Validation and evidence | _name_ | `src/blindspot/s4_validate/` | `review.csv`, `reference_sample.csv`, `validation_stats.json`, `rain_daily.csv`, `peat_mask.tif` | [WS4](workstreams/WS4_validation.md) |
 | WS5 | Web app | _name_ | `web/` (not `web/data/`) | the deployed site | [WS5](workstreams/WS5_web_app.md) |
