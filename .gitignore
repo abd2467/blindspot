@@ -1,0 +1,20 @@
+# data: large or regenerated
+data/raw/
+data/interim/
+data/fixtures/
+!data/**/.gitkeep
+# secrets
+.env
+.netrc
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+# editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.aux.xml

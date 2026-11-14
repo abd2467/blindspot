@@ -1,0 +1,13 @@
+[project]
+name = "blindspot"
+version = "0.1.0"
+description = "What the hotspots missed: NISAR radar audits the fire hotspot record (NASA Space Apps 2026)"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

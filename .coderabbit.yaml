@@ -1,0 +1,32 @@
+# CodeRabbit review settings for Blindspot. Docs: https://docs.coderabbit.ai/guides/configure-coderabbit
+language: en-US
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!web/data/**"
+    - "!data/**"
+  path_instructions:
+    - path: "src/blindspot/**"
+      instructions: >
+        Read AGENTS.md and docs/CONTRACTS.md. Flag any change to output file names, fields,
+        labels or IDs that breaks a contract; hard-coded grid, dates or paths that belong in
+        config.py; non-vectorised loops over pixels; units mixed up between linear power and dB;
+        CRS mistakes (analysis grid EPSG:32749, hand-off vectors EPSG:4326); and silent failures.
+        The method must stay statistical and physics-based (no trained models).
+    - path: "src/blindspot/config.py"
+      instructions: "Shared by every workstream. Check that any change is announced and that fixtures and contracts still match."
+    - path: "web/**"
+      instructions: >
+        Plain JS, no build step. The app may only read files under web/data/ listed in
+        docs/CONTRACTS.md. Check wording: 'no hotspot recorded', never 'missed fire' or 'illegal'.
+        Check accessibility (labels, not colour alone) and that numbers come from data files.
+    - path: "docs/**"
+      instructions: "Check that every figure has a source and that no claim goes beyond the evidence."
+chat:
+  auto_reply: true

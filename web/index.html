@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blindspot: what the hotspots missed</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="demo-banner" hidden>DEMO DATA: synthetic scene from scripts/make_fixtures.py, not real NISAR results</div>
+<header>
+  <div>
+    <h1>Blindspot</h1>
+    <p class="tag">What the hotspots missed. NISAR L-band radar sees land change under the 2026 haze.</p>
+  </div>
+  <nav>
+    <button data-panel="explore" class="active">Explore</button>
+    <button data-panel="why">Why radar</button>
+    <button data-panel="singapore">Singapore</button>
+    <button data-panel="method">Method &amp; sources</button>
+  </nav>
+</header>
+
+<main>
+  <section id="map-wrap">
+    <div id="map"></div>
+    <div id="timeline">
+      <label for="date-slider">Radar date <strong id="date-label"></strong></label>
+      <input id="date-slider" type="range" min="0" max="0" step="1" value="0">
+      <div id="date-ticks"></div>
+      <div class="legend">
+        <span><i class="sw rec"></i>Change, hotspot recorded</span>
+        <span><i class="sw none"></i>Change, no hotspot recorded</span>
+        <span><i class="sw insuf"></i>Insufficient fire data</span>
+        <span><i class="dot"></i>FIRMS hotspot (this window)</span>
+        <label><input type="checkbox" id="show-radar" checked> radar image</label>
+        <label><input type="checkbox" id="compare"> compare with June baseline</label>
+      </div>
+    </div>
+  </section>
+
+  <aside id="side">
+    <div class="panel" id="panel-explore">
+      <div id="headline" class="card">
+        <div class="big"><span id="h-share">–</span></div>
+        <div>of radar-detected land change had <strong>no fire hotspot recorded</strong> nearby</div>
+        <div class="range" id="h-range"></div>
+        <div class="sub" id="h-area"></div>
+      </div>
+      <div id="patch-card" class="card" hidden>
+        <h3 id="p-title"></h3>
+        <div id="p-badges"></div>
+        <canvas id="p-chart" height="190"></canvas>
+        <dl id="p-facts"></dl>
+        <p class="hint">Radar change is a candidate disturbance, not proof of fire. Interpretation is set after review of independent evidence.</p>
+      </div>
+      <div class="card hint" id="explore-hint">Click a coloured patch to see its radar history.</div>
+      <canvas id="bydate-chart" height="160"></canvas>
+    </div>
+
+    <div class="panel" id="panel-why" hidden>
+      <div class="card">
+        <h3>Optical satellites see smoke. Radar sees the ground.</h3>
+        <p>Pick a date: the left image is NASA GIBS true colour from that day; the map shows NISAR radar from the nearest acquisition.</p>
+        <input type="date" id="gibs-date" value="2026-10-09" min="2026-06-01" max="2026-11-10">
+        <img id="gibs-img" alt="GIBS true-colour snapshot of the study area">
+        <p class="sub">Imagery: NASA GIBS (VIIRS SNPP corrected reflectance).</p>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-singapore" hidden>
+      <div class="card">
+        <h3>The haze Singapore breathed</h3>
+        <canvas id="psi-chart" height="220"></canvas>
+        <p class="sub">Daily max 24-hr PSI (data.gov.sg). Unhealthy above 100. Peak 192 on 9 Oct 2026 (NEA).</p>
+        <canvas id="rain-chart" height="140"></canvas>
+        <p class="sub">Rainfall over the study area (NASA GPM IMERG). The wet season returns in late October.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-method" hidden>
+      <div class="card" id="method-card">
+        <h3>How it works</h3>
+        <ol>
+          <li>NISAR L-band GCOV, track 061 descending, 11 dates 18 Jun to 28 Oct 2026, averaged to 60 m.</li>
+          <li>Each date is normalised against the scene so rain and calibration shifts cancel.</li>
+          <li>A sequential omnibus test (Conradsen 2016; Canty 2020) flags pixels whose HH+HV backscatter changed, at a 1% false-alarm rate; HV must stay down for two dates.</li>
+          <li>Patches of 1 ha or more are checked against NASA FIRMS VIIRS and MODIS hotspots within 1 km, between the previous radar date and the change date.</li>
+          <li>The range comes from a Monte Carlo run over hotspot position, buffer and time window; the area interval from a labelled sample (Olofsson 2014).</li>
+        </ol>
+        <div id="validation"></div>
+        <p class="disclaimer">Research prototype using provisional NISAR data. Shows where land changed, not who caused it. Not for legal or enforcement use without verification on the ground.</p>
+        <p class="sub">Full sources: see the README in the repository.</p>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
