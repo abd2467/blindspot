@@ -73,9 +73,14 @@ git add web/data data/processed && git commit -m "data: integrate real results" 
 
 If a stage fails, the contracts tell you whose file is wrong. Fix or roll back that one input; everything else keeps working because S5 skips missing inputs.
 
+## Hand-off checklist (the integration run can only use what is in the repo)
+
+The integrator, whether the lead or an AI assistant, has none of your logins and cannot run your downloads. Whatever you leave on your laptop does not exist for integration. The exact files each workstream must commit or upload, with deadlines, are in [`AGENTS.md` section 6](../AGENTS.md#6-hand-off-what-every-workstream-must-deliver-to-the-repo-assistants-enforce-this). Your AI assistant reads that file and should remind you.
+
 ## Definition of done (per workstream)
 
 - Output file passes `python -m blindspot.contracts <name>`.
+- Outputs are **in the repo or the `data-v1` release, and the PR is merged** (AGENTS.md section 6). Work left on your machine counts as not done.
 - Step list in your guide is ticked off, or the unfinished steps are written in your PR as "not done".
 - Every external source you used is in `docs/DATA_REGISTER.md`.
 - No claim stronger than the evidence ("no hotspot recorded", not "missed fire").

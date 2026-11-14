@@ -42,5 +42,12 @@ Presentation is a fifth of the score. The judging guide says teams often neglect
 
 9. **Judge Q&A sheet (30 min).** One page in `story/qa.md`: "Is this proof of illegal burning?", "Why not just use RADD?", "How do you know it's fire and not clearing?", "What about rain?", "Why only one track?", "What would it take to scale?". Answers are in `docs/BRIEF.md` sections 5, 6, 10.
 
+## Hand-off (required: integration cannot use anything left on your machine)
+By **19:00 SGT**:
+- **Merged into `main`:** code, `psi_daily.csv`, `eonet_events.geojson` (in `data/processed/`), everything in `story/`.
+- **Uploaded to release `data-v1`:** the video file, if any.
+- Contract check output pasted in the PR; file names posted in the team chat.
+The integrator has none of your logins, so it cannot rerun your downloads. If you will miss this, say so in the chat before the deadline and name your fallback.
+
 ## Done when
 The submission shows as submitted before 23:00, with the demo, repo link, live URL and full References.

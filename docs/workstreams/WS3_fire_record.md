@@ -49,5 +49,12 @@ Starting code: `firms.py` (download + build; download not yet run against the li
 - FIRMS API down or slow: use the FIRMS archive download (https://firms.modaps.eosdis.nasa.gov/download/) for the box and season, save CSVs in `data/raw/firms/`, then `build`.
 - No time for Monte Carlo on real data: `--runs 50`.
 
+## Hand-off (required: integration cannot use anything left on your machine)
+By **14:00 SGT**:
+- **Merged into `main`:** code, `hotspots.geojson`, `crosscheck.csv`, `crosscheck_stats.json` (in `data/processed/`), `data/raw/firms/coverage.json` (`git add -f`).
+- **Uploaded to release `data-v1`:** `firms_raw.zip` (the raw CSVs).
+- Contract check output pasted in the PR; file names posted in the team chat.
+The integrator has none of your logins, so it cannot rerun your downloads. If you will miss this, say so in the chat before the deadline and name your fallback.
+
 ## Done when
 Both outputs pass the checks on real data and the headline sentence (with range, eligible area and settings) is posted for WS5 and WS6.

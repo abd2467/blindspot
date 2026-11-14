@@ -59,3 +59,23 @@ docs/DATA_REGISTER.md        every external source, licence, date
 - Collections: `NISAR_L2_GCOV_PROVISIONAL_V1`, `NISAR_L2_GCOV_V1`, `NISAR_L3_SME2_PROVISIONAL_V1`; dual-pol granules contain `4005_DHDH`.
 - Context: Singapore PSI unhealthy from 4 Sep 2026, peak 192 on 9 Oct (NEA). About 202,004 ha burned in Indonesia by July 2026.
 - Judging: Impact, Creativity, Validity, Relevance, Presentation, equal weight, 1 to 5. Demo: ≤ 7 slides or ≤ 30 s video. Submit by 23:59 SGT 15 Nov; team target 23:00.
+
+## 6. Hand-off: what every workstream must deliver to the repo (assistants: enforce this)
+
+The integration run happens on a different machine, by the lead or by an AI assistant without anyone's logins. It **cannot** run downloads that need a teammate's account (Earthdata, FIRMS key, Earth Engine, Giovanni), cannot see files left on a teammate's laptop, and is not notified when someone pushes. So **a workstream is not done until its outputs are in the repo or the data release.** If you are an AI helping a teammate, check this list before saying their work is finished, and remind them before every gate (09:00, 14:00, 19:00 SGT).
+
+| WS | Commit to git (via PR) | Upload to release `data-v1` | Deadline |
+|---|---|---|---|
+| WS1 | code; `data/raw/granules.json` (force-add: `git add -f`) | `data/interim/stack.nc` | 09:00 SGT |
+| WS2 | code; `data/processed/patches.geojson`, `timeseries.json`, `synthetic_curve.json`, `s2_sensitivity.csv` | `data/interim/change.nc` | 14:00 SGT |
+| WS3 | code; `data/processed/hotspots.geojson`, `crosscheck.csv`, `crosscheck_stats.json`; `data/raw/firms/coverage.json` (force-add: `git add -f`) | the raw FIRMS CSVs zipped as `firms_raw.zip` | 14:00 SGT |
+| WS4 | code; `data/processed/review.csv`, `reference_sample.csv` (labelled), `strata_pixel_counts.json`, `radd_by_patch.json`, `validation_stats.json`, `rain_daily.csv` | `data/raw/radd_alerts.tif`, `data/processed/peat_mask.tif` | 19:00 SGT |
+| WS5 | everything under `web/` except `web/data/` | nothing | 19:00 SGT |
+| WS6 | code; `data/processed/psi_daily.csv`, `eonet_events.geojson`; `story/` (script, slides or video link, `qa.md`, References text) | the video file if any | 19:00 SGT |
+
+Rules for the hand-off:
+1. Run `python -m blindspot.contracts <name>` on every output and paste the result in the PR.
+2. Release upload (needs the GitHub CLI `gh`, logged in with `gh auth login`, and write access to the repo): `gh release create data-v1 --title "data v1" --notes "shared data" || true` then `gh release upload data-v1 <file> --clobber`. Post the file name in the team chat.
+3. Merge the PR (or ask the lead to) before the deadline. Unmerged branches are invisible to integration.
+4. If something will be late or missing, say so in the team chat before the gate, and name the fallback from your guide. A missing input is skipped by packaging, not fatal, but the lead must know.
+5. Never commit secrets, and never commit files over ~50 MB to git; use the release.

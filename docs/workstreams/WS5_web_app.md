@@ -43,5 +43,12 @@ The app already works on fixture data: `web/index.html`, `web/app.js`, `web/styl
 - Every number on screen comes from `web/data/`; nothing typed by hand.
 - Colour must not be the only signal (labels or patterns for colour-blind users).
 
+## Hand-off (required: integration cannot use anything left on your machine)
+By **19:00 SGT**:
+- **Merged into `main`:** everything under `web/` except `web/data/`.
+- **Uploaded to release `data-v1`:** nothing.
+- Contract check output pasted in the PR; file names posted in the team chat.
+The integrator has none of your logins, so it cannot rerun your downloads. If you will miss this, say so in the chat before the deadline and name your fallback.
+
 ## Done when
 The deployed URL works on real data, a first-time user can find the headline, play the timeline, open a patch and read its evidence, and the disclaimer is visible.

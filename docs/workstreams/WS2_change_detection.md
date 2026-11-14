@@ -49,5 +49,12 @@ Starting code already runs end to end on fixtures:
 - Omnibus misbehaves on real data (everything or nothing flagged): switch to `--method logratio --threshold auto` and tell WS3. Same contract, nothing downstream changes.
 - Too many tiny patches: raise `min_patch_ha` or `--smooth 5`.
 
+## Hand-off (required: integration cannot use anything left on your machine)
+By **14:00 SGT**:
+- **Merged into `main`:** code, `patches.geojson`, `timeseries.json`, `synthetic_curve.json`, `s2_sensitivity.csv` (in `data/processed/`).
+- **Uploaded to release `data-v1`:** `data/interim/change.nc`.
+- Contract check output pasted in the PR; file names posted in the team chat.
+The integrator has none of your logins, so it cannot rerun your downloads. If you will miss this, say so in the chat before the deadline and name your fallback.
+
 ## Done when
 All four outputs pass the contract checks on real data, the sensitivity table and synthetic curve are in the PR, and the method string in `change.nc` says which test and settings were used.

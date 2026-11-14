@@ -72,5 +72,12 @@ Starting code: `validate.py` with `sample`, `review`, `radd` and `stats` command
 - No Earth Engine: skip RADD, rely on the reviewed patches and the labelled sample; say so in the app.
 - Not enough time to label 50: label at least 10 per stratum; the CI widens and that is honest.
 
+## Hand-off (required: integration cannot use anything left on your machine)
+By **19:00 SGT**:
+- **Merged into `main`:** code, `review.csv`, labelled `reference_sample.csv`, `strata_pixel_counts.json`, `radd_by_patch.json`, `validation_stats.json`, `rain_daily.csv` (in `data/processed/`).
+- **Uploaded to release `data-v1`:** `radd_alerts.tif`, `peat_mask.tif`.
+- Contract check output pasted in the PR; file names posted in the team chat.
+The integrator has none of your logins, so it cannot rerun your downloads. If you will miss this, say so in the chat before the deadline and name your fallback.
+
 ## Done when
 `review.csv` and `validation_stats.json` pass the checks, at least 10 patches have a reviewed interpretation, and every source you used is in `docs/DATA_REGISTER.md`.

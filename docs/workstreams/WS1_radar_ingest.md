@@ -62,5 +62,12 @@ Starting code: `src/blindspot/s1_ingest/ingest.py` (written from the product doc
 - h5py streaming fails: download whole granules to `data/raw/` for 2 or 3 dates only, or use ASF Vertex subsetting / the ASF NISAR Cookbook notebooks from the challenge resources.
 - Wrong track coverage: switch to ascending track 125 frame 176 (10 dates).
 
+## Hand-off (required: integration cannot use anything left on your machine)
+By **09:00 SGT**:
+- **Merged into `main`:** code, `data/raw/granules.json` (`git add -f`, the folder is ignored).
+- **Uploaded to release `data-v1`:** `data/interim/stack.nc`.
+- Contract check output pasted in the PR; file names posted in the team chat.
+The integrator has none of your logins, so it cannot rerun your downloads. If you will miss this, say so in the chat before the deadline and name your fallback.
+
 ## Done when
 `python -m blindspot.contracts stack` passes on the real file, it is on the `data-v1` release, and WS2 has confirmed it opens.
