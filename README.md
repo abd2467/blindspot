@@ -50,7 +50,8 @@ Six people on six machines, each owning one workstream. Workstreams connect only
 - **Exact dataset links and filters (use only these):** [`docs/DATASETS.md`](docs/DATASETS.md).
 - **File formats between workstreams:** [`docs/CONTRACTS.md`](docs/CONTRACTS.md).
 - **Using an AI assistant?** It reads [`AGENTS.md`](AGENTS.md) (Claude Code via `CLAUDE.md`). For a chat assistant, paste `AGENTS.md` and your workstream guide first.
-- **Map of the codebase (optional, recommended):** [Floorplan](https://github.com/haydenschmitty/floorplan) draws a plain-English, clickable map of this repo inside Claude Code or Codex. Each person installs it on their own machine (Node.js 18+):
+- **Visual map of the repo and the workflow:** download [`docs/floorplan.html`](docs/floorplan.html) and open it in a browser (GitHub shows it as code). It shows every stage, who owns it, which file it hands to whom, and two guided flows ("From radar image to headline number", "How your work plugs in"). The lead refreshes it after big merges.
+- **Your own live map (optional):** [Floorplan](https://github.com/haydenschmitty/floorplan) draws a plain-English, clickable map of this repo inside Claude Code or Codex. Each person installs it on their own machine (Node.js 18+):
   ```bash
   claude plugin marketplace add haydenschmitty/floorplan && claude plugin install floorplan@floorplan   # Claude Code
   codex plugin marketplace add haydenschmitty/floorplan && codex plugin add floorplan@floorplan        # Codex

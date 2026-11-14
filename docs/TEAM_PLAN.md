@@ -57,6 +57,10 @@ Check in on the team chat at every gate: one line each, "done / blocked by X / f
 | Large files (`stack.nc`, `change.nc`, `radd_alerts.tif`) | GitHub release assets: `gh release create data-v1 --title "data v1" --notes "..."` once, then `gh release upload data-v1 data/interim/stack.nc --clobber`. Download: `gh release download data-v1 -D data/interim -p stack.nc` |
 | Secrets (keys, passwords) | Your own `.env` only. Never commit them |
 
+## Keeping the map current (lead)
+
+`docs/floorplan.html` is a Floorplan export. After big merges, in Claude Code with the Floorplan plugin: ask "Update the floorplan", then run `node floorplan/serve.mjs --export docs/floorplan.html --include flows,notes` and commit the HTML. The `floorplan/` working folder stays out of git.
+
 ## Integration day procedure (lead)
 
 ```bash
