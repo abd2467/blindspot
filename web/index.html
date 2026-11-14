@@ -1,104 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blindspot: what the hotspots missed</title>
+<title>BlindSpot: what the hotspots missed</title>
+<meta name="description" content="NISAR L-band radar maps land change in a Kalimantan peat landscape during the 2026 haze and checks it against NASA's fire hotspot record.">
+<link rel="icon" type="image/svg+xml" href="assets/brand/blindspot-mark-on-dark.svg">
+<link rel="preload" href="vendor/fonts/space-grotesk-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="demo-banner" hidden>DEMO DATA: synthetic scene from scripts/make_fixtures.py, not real NISAR results</div>
-<header>
-  <div>
-    <h1>Blindspot</h1>
-    <p class="tag">What the hotspots missed. NISAR L-band radar sees land change under the 2026 haze.</p>
+
+<!-- ===================== Intro ===================== -->
+<div id="intro" class="intro" data-phase="hero">
+  <canvas id="stars" class="intro-layer" aria-hidden="true"></canvas>
+  <canvas id="globe" class="intro-layer" role="img" aria-label="The Earth, turning slowly"></canvas>
+  <div id="spin" class="intro-layer intro-drag" aria-hidden="true"></div>
+  <div class="intro-hero">
+    <h1 class="intro-title"><svg class="wordmark" role="img" aria-label="BlindSpot" viewBox="47 -14 4566 914"><path d="M47 700V604H141V96H47V0H402Q465 0 512.0 21.5Q559 43 585.5 82.5Q612 122 612 176V186Q612 234 594.0 265.0Q576 296 550.5 313.0Q525 330 502 337V353Q525 359 551.5 376.5Q578 394 596.5 425.0Q615 456 615 506V516Q615 574 588.0 615.0Q561 656 513.5 678.0Q466 700 404 700ZM250 602H391Q445 602 476.0 576.0Q507 550 507 504V495Q507 449 476.5 423.0Q446 397 391 397H250ZM250 298H391Q442 298 473.0 272.5Q504 247 504 203V193Q504 149 473.5 123.5Q443 98 391 98H250Z M727 700V0H830V700Z M971 700V207H1074V700Z M1215 700V207H1316V281H1332Q1346 251 1382.0 225.0Q1418 199 1489 199Q1545 199 1588.5 224.0Q1632 249 1657.0 294.5Q1682 340 1682 404V700H1579V412Q1579 348 1547.0 317.5Q1515 287 1459 287Q1395 287 1356.5 329.0Q1318 371 1318 451V700Z M2022 714Q1961 714 1909.0 684.0Q1857 654 1825.5 597.5Q1794 541 1794 461V446Q1794 367 1825.0 310.0Q1856 253 1908.0 223.0Q1960 193 2022 193Q2070 193 2102.5 205.0Q2135 217 2156.0 235.5Q2177 254 2188 274H2204V0H2307V700H2206V630H2190Q2171 662 2132.5 688.0Q2094 714 2022 714ZM2051 624Q2118 624 2161.5 581.0Q2205 538 2205 458V449Q2205 370 2162.0 327.0Q2119 284 2051 284Q1985 284 1941.5 327.0Q1898 370 1898 449V458Q1898 538 1941.5 581.0Q1985 624 2051 624Z M2682 714Q2603 714 2542.0 686.0Q2481 658 2446.5 603.5Q2412 549 2412 471V446H2519V471Q2519 545 2563.5 582.0Q2608 619 2682 619Q2757 619 2795.0 587.5Q2833 556 2833 506Q2833 473 2815.0 452.0Q2797 431 2764.0 418.5Q2731 406 2685 395L2648 386Q2581 370 2531.5 346.5Q2482 323 2455.0 284.0Q2428 245 2428 184Q2428 122 2458.5 78.0Q2489 34 2543.0 10.0Q2597 -14 2670 -14Q2743 -14 2800.5 11.0Q2858 36 2891.0 85.0Q2924 134 2924 208V244H2817V208Q2817 163 2798.5 135.0Q2780 107 2747.0 94.0Q2714 81 2670 81Q2606 81 2570.5 107.5Q2535 134 2535 181Q2535 213 2550.5 233.5Q2566 254 2596.0 267.0Q2626 280 2671 290L2708 299Q2776 314 2828.0 337.5Q2880 361 2910.0 401.0Q2940 441 2940 504Q2940 567 2908.5 614.0Q2877 661 2819.0 687.5Q2761 714 2682 714Z M3044 900V207H3145V278H3161Q3180 245 3218.5 219.0Q3257 193 3329 193Q3391 193 3442.5 223.0Q3494 253 3525.5 309.5Q3557 366 3557 446V461Q3557 541 3526.0 597.5Q3495 654 3443.0 684.0Q3391 714 3329 714Q3281 714 3248.0 702.0Q3215 690 3195.0 671.5Q3175 653 3163 633H3147V900ZM3299 624Q3367 624 3410.0 581.0Q3453 538 3453 458V449Q3453 370 3409.5 327.0Q3366 284 3299 284Q3233 284 3189.5 327.0Q3146 370 3146 449V458Q3146 538 3189.5 581.0Q3233 624 3299 624Z M3904 714Q3830 714 3772.5 683.5Q3715 653 3682.0 596.0Q3649 539 3649 461V446Q3649 368 3682.0 311.5Q3715 255 3772.5 224.0Q3830 193 3904 193Q3978 193 4036.0 224.0Q4094 255 4127.0 311.5Q4160 368 4160 446V461Q4160 539 4127.0 596.0Q4094 653 4036.0 683.5Q3978 714 3904 714ZM3904 622Q3972 622 4014.5 578.5Q4057 535 4057 458V449Q4057 372 4015.0 328.5Q3973 285 3904 285Q3837 285 3794.5 328.5Q3752 372 3752 449V458Q3752 535 3794.5 578.5Q3837 622 3904 622Z M4461 700Q4416 700 4389.5 673.0Q4363 646 4363 601V294H4227V207H4363V44H4466V207H4613V294H4466V583Q4466 613 4494 613H4597V700Z" fill="#F4F7FB"/><circle cx="1022.5" cy="70.0" r="72" fill="#4CC9F0"/></svg>
+</h1>
+    <p class="intro-tag">What the hotspots missed.</p>
+    <button id="start" class="btn-start" type="button">Start</button>
   </div>
-  <nav>
-    <button data-panel="explore" class="active">Explore</button>
-    <button data-panel="why">Why radar</button>
-    <button data-panel="singapore">Singapore</button>
-    <button data-panel="method">Method &amp; sources</button>
-  </nav>
-</header>
+</div>
 
-<main>
-  <section id="map-wrap">
-    <div id="map"></div>
-    <div id="timeline">
-      <label for="date-slider">Radar date <strong id="date-label"></strong></label>
-      <input id="date-slider" type="range" min="0" max="0" step="1" value="0">
-      <div id="date-ticks"></div>
-      <div class="legend">
-        <span><i class="sw rec"></i>Change, hotspot recorded</span>
-        <span><i class="sw none"></i>Change, no hotspot recorded</span>
-        <span><i class="sw insuf"></i>Insufficient fire data</span>
-        <span><i class="dot"></i>FIRMS hotspot (this window)</span>
-        <label><input type="checkbox" id="show-radar" checked> radar image</label>
-        <label><input type="checkbox" id="compare"> compare with June baseline</label>
+<!-- ===================== App ===================== -->
+<div id="app" class="app" hidden>
+  <div id="demo-banner" class="demo-banner" hidden>Demo data: a synthetic scene for testing, not real NISAR results.</div>
+
+  <header class="hdr">
+    <button id="home" class="hdr-home" type="button" aria-label="BlindSpot, back to the start screen" title="Back to start"><svg class="lockup" aria-hidden="true" focusable="false" viewBox="0 -175.0 5878.5 1075.0"><g transform="translate(0 -175.0) scale(43.75)"><path d="M19.1342 5.5763A9.6 9.6 0 1 1 4.8658 5.5763" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><path d="M12.9377 6.6820A5.4 5.4 0 0 1 17.3180 11.0623" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle class="spot" cx="12" cy="12" r="2.4"/></g><g transform="translate(1265.5 0)"><path d="M47 700V604H141V96H47V0H402Q465 0 512.0 21.5Q559 43 585.5 82.5Q612 122 612 176V186Q612 234 594.0 265.0Q576 296 550.5 313.0Q525 330 502 337V353Q525 359 551.5 376.5Q578 394 596.5 425.0Q615 456 615 506V516Q615 574 588.0 615.0Q561 656 513.5 678.0Q466 700 404 700ZM250 602H391Q445 602 476.0 576.0Q507 550 507 504V495Q507 449 476.5 423.0Q446 397 391 397H250ZM250 298H391Q442 298 473.0 272.5Q504 247 504 203V193Q504 149 473.5 123.5Q443 98 391 98H250Z M727 700V0H830V700Z M971 700V207H1074V700Z M1215 700V207H1316V281H1332Q1346 251 1382.0 225.0Q1418 199 1489 199Q1545 199 1588.5 224.0Q1632 249 1657.0 294.5Q1682 340 1682 404V700H1579V412Q1579 348 1547.0 317.5Q1515 287 1459 287Q1395 287 1356.5 329.0Q1318 371 1318 451V700Z M2022 714Q1961 714 1909.0 684.0Q1857 654 1825.5 597.5Q1794 541 1794 461V446Q1794 367 1825.0 310.0Q1856 253 1908.0 223.0Q1960 193 2022 193Q2070 193 2102.5 205.0Q2135 217 2156.0 235.5Q2177 254 2188 274H2204V0H2307V700H2206V630H2190Q2171 662 2132.5 688.0Q2094 714 2022 714ZM2051 624Q2118 624 2161.5 581.0Q2205 538 2205 458V449Q2205 370 2162.0 327.0Q2119 284 2051 284Q1985 284 1941.5 327.0Q1898 370 1898 449V458Q1898 538 1941.5 581.0Q1985 624 2051 624Z M2682 714Q2603 714 2542.0 686.0Q2481 658 2446.5 603.5Q2412 549 2412 471V446H2519V471Q2519 545 2563.5 582.0Q2608 619 2682 619Q2757 619 2795.0 587.5Q2833 556 2833 506Q2833 473 2815.0 452.0Q2797 431 2764.0 418.5Q2731 406 2685 395L2648 386Q2581 370 2531.5 346.5Q2482 323 2455.0 284.0Q2428 245 2428 184Q2428 122 2458.5 78.0Q2489 34 2543.0 10.0Q2597 -14 2670 -14Q2743 -14 2800.5 11.0Q2858 36 2891.0 85.0Q2924 134 2924 208V244H2817V208Q2817 163 2798.5 135.0Q2780 107 2747.0 94.0Q2714 81 2670 81Q2606 81 2570.5 107.5Q2535 134 2535 181Q2535 213 2550.5 233.5Q2566 254 2596.0 267.0Q2626 280 2671 290L2708 299Q2776 314 2828.0 337.5Q2880 361 2910.0 401.0Q2940 441 2940 504Q2940 567 2908.5 614.0Q2877 661 2819.0 687.5Q2761 714 2682 714Z M3044 900V207H3145V278H3161Q3180 245 3218.5 219.0Q3257 193 3329 193Q3391 193 3442.5 223.0Q3494 253 3525.5 309.5Q3557 366 3557 446V461Q3557 541 3526.0 597.5Q3495 654 3443.0 684.0Q3391 714 3329 714Q3281 714 3248.0 702.0Q3215 690 3195.0 671.5Q3175 653 3163 633H3147V900ZM3299 624Q3367 624 3410.0 581.0Q3453 538 3453 458V449Q3453 370 3409.5 327.0Q3366 284 3299 284Q3233 284 3189.5 327.0Q3146 370 3146 449V458Q3146 538 3189.5 581.0Q3233 624 3299 624Z M3904 714Q3830 714 3772.5 683.5Q3715 653 3682.0 596.0Q3649 539 3649 461V446Q3649 368 3682.0 311.5Q3715 255 3772.5 224.0Q3830 193 3904 193Q3978 193 4036.0 224.0Q4094 255 4127.0 311.5Q4160 368 4160 446V461Q4160 539 4127.0 596.0Q4094 653 4036.0 683.5Q3978 714 3904 714ZM3904 622Q3972 622 4014.5 578.5Q4057 535 4057 458V449Q4057 372 4015.0 328.5Q3973 285 3904 285Q3837 285 3794.5 328.5Q3752 372 3752 449V458Q3752 535 3794.5 578.5Q3837 622 3904 622Z M4461 700Q4416 700 4389.5 673.0Q4363 646 4363 601V294H4227V207H4363V44H4466V207H4613V294H4466V583Q4466 613 4494 613H4597V700Z" fill="currentColor"/><circle class="spot" cx="1022.5" cy="70.0" r="72"/></g></svg>
+</button>
+    <nav class="hdr-nav" aria-label="Sections">
+      <a href="#explore" data-page="explore">Explore</a>
+      <a href="#why" data-page="why">Why radar</a>
+      <a href="#singapore" data-page="singapore">Singapore</a>
+      <a href="#method" data-page="method">Method</a>
+    </nav>
+    <div class="hdr-theme" role="group" aria-label="Theme">
+      <button type="button" data-theme-set="dark" aria-label="Dark theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></button>
+      <button type="button" data-theme-set="light" aria-label="Light theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+    </div>
+  </header>
+
+  <!-- ---------- Explore ---------- -->
+  <main id="page-explore" class="page dash" data-page="explore">
+    <section class="dash-top" aria-label="Headline">
+      <div class="dash-head">
+        <h1 class="headline"><span id="h-share" class="c-unrec">–</span> of radar-detected change had no fire hotspot recorded.</h1>
+        <p id="h-sub" class="sub"></p>
+      </div>
+      <div class="figs">
+        <div class="fig"><div id="f-total" class="fig-v">–</div><div class="fig-l">km² changed</div></div>
+        <div class="fig"><div id="f-none" class="fig-v c-unrec">–</div><div class="fig-l">km² no hotspot</div></div>
+        <div class="fig"><div id="f-adj" class="fig-v">–</div><div id="f-adj-l" class="fig-l">km² error-adjusted</div></div>
+      </div>
+    </section>
+
+    <div class="dash-body">
+      <section class="sat" aria-label="Satellite view">
+        <div id="map" class="map"></div>
+        <div class="map-label" aria-live="polite">
+          <div id="map-date" class="map-date"></div>
+          <div id="map-src" class="map-src">NISAR · L-band HV · 60 m</div>
+        </div>
+        <div class="legend map-legend">
+          <span><i class="sw sw-none"></i>No hotspot recorded</span>
+          <span><i class="sw sw-rec"></i>Hotspot recorded</span>
+          <span><i class="sw sw-insuf"></i>Insufficient fire data</span>
+          <span><i class="dot"></i>FIRMS hotspot</span>
+          <span id="lg-event" hidden><i class="ev-key"></i>EONET event</span>
+        </div>
+        <button id="peat-toggle" class="map-chip" type="button" aria-pressed="false" hidden>Peat soils</button>
+        <div class="map-zoom" role="group" aria-label="Zoom">
+          <button id="z-in" type="button" aria-label="Zoom in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button id="z-out" type="button" aria-label="Zoom out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+          <button id="z-fit" type="button" aria-label="Fit the study area"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="Charts">
+        <div class="chart-block">
+          <div class="chart-h"><span>Change by radar date</span><span class="unit">km²</span></div>
+          <div class="chart-box chart-bars"><canvas id="c-bars" role="img" aria-label="Area of change at each radar date, split by whether a hotspot was recorded"></canvas></div>
+        </div>
+
+        <div class="chart-block">
+          <div class="chart-h"><span id="p-title">Patch</span><span class="unit">HV backscatter, dB</span></div>
+          <div class="p-sum"><span id="p-drop" class="p-drop">–</span><span id="p-meta" class="p-meta"></span></div>
+          <div id="p-badges" class="badges"></div>
+          <div class="chart-box chart-patch"><canvas id="c-patch" role="img" aria-label="Radar history of the selected patch against stable forest"></canvas></div>
+          <div class="chart-legend"><span><i class="ln ln-dash"></i>Stable forest</span><span><i class="ln ln-unrec"></i>This patch</span><span><i class="sw sw-rain"></i>Rain</span></div>
+          <details class="evidence"><summary>Evidence for this patch</summary><dl id="p-evidence"></dl></details>
+        </div>
+
+      </aside>
+    </div>
+
+    <div class="bar" aria-label="Timeline">
+      <button id="play" class="play" type="button" aria-label="Play the season"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg></button>
+      <div id="ticks" class="ticks" role="group" aria-label="Radar dates"></div>
+      <div class="compare" role="group" aria-label="Compare">
+        <button id="v-before" type="button">Baseline</button>
+        <button id="v-after" type="button">Selected</button>
       </div>
     </div>
-  </section>
+    <p class="note">Change with no hotspot recorded is not proof of a missed fire. Click a patch to see its evidence.</p>
+  </main>
 
-  <aside id="side">
-    <div class="panel" id="panel-explore">
-      <div id="headline" class="card">
-        <div class="big"><span id="h-share">–</span></div>
-        <div>of radar-detected land change had <strong>no fire hotspot recorded</strong> nearby</div>
-        <div class="range" id="h-range"></div>
-        <div class="sub" id="h-area"></div>
-      </div>
-      <div id="patch-card" class="card" hidden>
-        <h3 id="p-title"></h3>
-        <div id="p-badges"></div>
-        <canvas id="p-chart" height="190"></canvas>
-        <dl id="p-facts"></dl>
-        <p class="hint">Radar change is a candidate disturbance, not proof of fire. Interpretation is set after review of independent evidence.</p>
-      </div>
-      <div class="card hint" id="explore-hint">Click a coloured patch to see its radar history.</div>
-      <canvas id="bydate-chart" height="160"></canvas>
-    </div>
+  <!-- ---------- Why radar ---------- -->
+  <main id="page-why" class="page ed" data-page="why" hidden>
+    <div class="eyebrow c-radar">Why radar</div>
+    <h1 class="ed-h1">Smoke hides the fire. Radar doesn't.</h1>
+    <p class="ed-lede">During Indonesia's 2026 fire season, thick smoke and cloud hid Kalimantan from the optical satellites that build the fire record. NISAR's L-band radar looks straight through.</p>
 
-    <div class="panel" id="panel-why" hidden>
-      <div class="card">
-        <h3>Optical satellites see smoke. Radar sees the ground.</h3>
-        <p>Pick a date: the left image is NASA GIBS true colour from that day; the map shows NISAR radar from the nearest acquisition.</p>
-        <input type="date" id="gibs-date" value="2026-10-09" min="2026-06-01" max="2026-11-10">
-        <img id="gibs-img" alt="GIBS true-colour snapshot of the study area">
-        <p class="sub">Imagery: NASA GIBS (VIIRS SNPP corrected reflectance).</p>
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">01</div><h2>The record goes quiet when it matters most</h2></div>
+      <div class="sec-b">
+        <p>Indonesia tracks fires with the MODIS and VIIRS instruments, which detect heat. NASA notes that the recorded fire count can fall when fires are most intense, because thick smoke and cloud block the view. Peat also smoulders underground, often too cool to register.</p>
+        <div class="stats">
+          <div><div class="stat">&lt;30%</div><p>chance that MODIS detects even powerful fires in some equatorial areas</p></div>
+          <div><div class="stat">&lt;40%</div><p>the same for VIIRS, mainly because of cloud</p></div>
+          <div><div class="stat c-haze" data-psi-peak>–</div><p data-psi-peak-label>Singapore's peak 24-hr PSI this season</p></div>
+        </div>
+        <p class="cite">Sources: <a href="https://gmd.copernicus.org/articles/19/10123/2026/">Sofiev &amp; Kouznetsov, Geoscientific Model Development (2026)</a>; <a href="https://science.nasa.gov/missions/aqua/peatland-fires-darken-skies-in-indonesia/">NASA Earth Observatory (Sep 2026)</a>; PSI from the app's data (data.gov.sg).</p>
       </div>
-    </div>
+    </section>
 
-    <div class="panel" id="panel-singapore" hidden>
-      <div class="card">
-        <h3>The haze Singapore breathed</h3>
-        <canvas id="psi-chart" height="220"></canvas>
-        <p class="sub">Daily max 24-hr PSI (data.gov.sg). Unhealthy above 100. Peak 192 on 9 Oct 2026 (NEA).</p>
-        <canvas id="rain-chart" height="140"></canvas>
-        <p class="sub">Rainfall over the study area (NASA GPM IMERG). The wet season returns in late October.</p>
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">02</div><h2>A 24 cm wave passes through smoke</h2></div>
+      <div class="sec-b">
+        <p>NISAR sends its own microwave pulse at L-band, a wavelength of about 24 cm, far longer than smoke particles or cloud droplets, so it passes through them. It works day and night and returns to the same place every 12 days.</p>
+        <div class="compare-img">
+          <figure>
+            <div class="ci-frame"><img id="gibs-img" alt="True-colour MODIS view of the study area on 9 October 2026" loading="lazy"><div id="gibs-fail" class="ci-fail" hidden>True-colour image unavailable right now.</div></div>
+            <figcaption>What optical satellites saw · <span id="gibs-date">9 Oct 2026</span> · NASA GIBS</figcaption>
+          </figure>
+          <figure>
+            <div class="ci-frame"><img id="radar-img" alt="NISAR HV radar image of the same area" loading="lazy"></div>
+            <figcaption>What NISAR saw · <span id="radar-date"></span> · HV backscatter</figcaption>
+          </figure>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel" id="panel-method" hidden>
-      <div class="card" id="method-card">
-        <h3>How it works</h3>
-        <ol>
-          <li>NISAR L-band GCOV, track 061 descending, 11 dates 18 Jun to 28 Oct 2026, averaged to 60 m.</li>
-          <li>Each date is normalised against the scene so rain and calibration shifts cancel.</li>
-          <li>A sequential omnibus test (Conradsen 2016; Canty 2020) flags pixels whose HH+HV backscatter changed, at a 1% false-alarm rate; HV must stay down for two dates.</li>
-          <li>Patches of 1 ha or more are checked against NASA FIRMS VIIRS and MODIS hotspots within 1 km, between the previous radar date and the change date.</li>
-          <li>The range comes from a Monte Carlo run over hotspot position, buffer and time window; the area interval from a labelled sample (Olofsson 2014).</li>
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">03</div><h2>What a burn looks like to radar</h2></div>
+      <div class="sec-b">
+        <p>The cross-polarised HV signal comes mostly from scattering inside the forest canopy. When the canopy burns or is cleared, HV drops and stays down. In peatland, L-band separated burned from unburned land with 93 to 96% overall accuracy in a recent Indonesian study.</p>
+        <div class="chart-legend chart-legend-ed"><span><i class="ln ln-dash"></i>Stable forest, HV</span><span><i class="ln ln-unrec"></i>This patch, HV</span><span><i class="ln ln-hh"></i>This patch, HH</span><span><i class="sw sw-rain"></i>Rain between dates</span></div>
+        <div class="chart-box chart-ed"><canvas id="c-why" role="img" aria-label="The selected patch's radar signal against stable forest"></canvas></div>
+        <p class="cite">The patch selected on the Explore page, against stable forest. Accuracy: <a href="https://frontiers.ui.ac.id/synapseai/?p=389">Sudiana et al., Computers (2025)</a>.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">04</div><h2>From radar to an audit</h2></div>
+      <div class="sec-b">
+        <p>BlindSpot checks every patch of radar-detected change against the hotspot record. Where none was recorded, the patch becomes a place to look: a candidate disturbance, not proof of fire.</p>
+        <a class="btn-primary" href="#explore">Open the analysis</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ---------- Singapore ---------- -->
+  <main id="page-singapore" class="page ed" data-page="singapore" hidden>
+    <div class="eyebrow c-haze">Singapore</div>
+    <h1 class="ed-h1">The haze Singapore breathed in 2026.</h1>
+    <p class="ed-lede">For the first time since 2023, smoke from Sumatra and Kalimantan pushed Singapore's air into the unhealthy range.</p>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">01</div><h2>The peak</h2></div>
+      <div class="sec-b">
+        <div class="peak"><span class="peak-v c-haze" data-psi-peak>–</span><span id="psi-peak-label" class="peak-l"></span></div>
+        <div class="psi-band" aria-hidden="true">
+          <div class="psi-track"><i style="flex:50"></i><i style="flex:50"></i><i style="flex:100"></i><i style="flex:100"></i><i style="flex:100"></i><b id="psi-marker"></b></div>
+          <div class="psi-labels"><span style="flex:50">Good</span><span style="flex:50">Moderate</span><span style="flex:100">Unhealthy</span><span style="flex:100">Very unhealthy</span><span style="flex:100">Hazardous</span></div>
+        </div>
+        <p class="cite">PSI bands as published by Singapore's National Environment Agency.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">02</div><h2>The season, day by day</h2></div>
+      <div class="sec-b">
+        <div class="chart-box chart-psi"><canvas id="c-psi" role="img" aria-label="Singapore's daily 24-hour PSI through the 2026 season, with the unhealthy threshold at 100"></canvas></div>
+        <p class="cite">Daily maximum 24-hr PSI. Dashed line: 100, the start of the unhealthy band. Source: <a href="https://data.gov.sg/datasets/d_b4cf557f8750260d229c49fd768e11ed/view">data.gov.sg</a>.</p>
+        <ol class="events">
+          <li><div class="ev-d">Jul 2026</div><div><div>About 202,004 hectares have burned in Indonesia so far this year.</div><div class="ev-s"><a href="https://rri.co.id/en/environment/2651866/indonesian-government-expands-alert-zone-over-forest-and-land-fire-impacts">RRI, 14 Aug 2026</a></div></div></li>
+          <li><div class="ev-d">4 Sep 2026</div><div><div>Singapore's 24-hour PSI enters the unhealthy range for the first time since October 2023.</div><div class="ev-s"><a href="https://www.nea.gov.sg/media/news/news/index/singapore-government-agencies-implement-measures-to-mitigate-impact-of-haze-Aug2026">National Environment Agency</a></div></div></li>
+          <li><div class="ev-d">9 Oct 2026</div><div><div>PSI peaks at 192 in the central region. NEA traces the smoke plumes to Sumatra and Kalimantan.</div><div class="ev-s"><a href="https://asianews.network/?p=307517">Asia News Network</a></div></div></li>
+          <li><div class="ev-d">19 Oct 2026</div><div><div>Singapore has served preventive measure notices on 10 plantation firms. Experts say satellite images alone struggle to locate where a fire started.</div><div class="ev-s">Asia News Network / The Straits Times, 22 Oct 2026</div></div></li>
         </ol>
-        <div id="validation"></div>
-        <p class="disclaimer">Research prototype using provisional NISAR data. Shows where land changed, not who caused it. Not for legal or enforcement use without verification on the ground.</p>
-        <p class="sub">Full sources: see the README in the repository.</p>
       </div>
-    </div>
-  </aside>
-</main>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">03</div><h2>What haze has cost before</h2></div>
+      <div class="sec-b">
+        <div class="stats">
+          <div><div class="stat">100,000</div><p>possible premature deaths from the 2015 smoke across Indonesia, Malaysia and Singapore (<a href="https://seas.harvard.edu/news/2016/09/smoke-2015-indonesian-fires-may-have-caused-100000-premature-deaths">Harvard, 2016</a>)</p></div>
+          <div><div class="stat">US$16.1B</div><p>cost of the 2015 fires to Indonesia, about 1.9% of GDP (<a href="https://openknowledge.worldbank.org/entities/publication/391e19f4-18f7-56c2-8c28-bb89cc9e7d6f">World Bank</a>)</p></div>
+          <div><div class="stat">202,004 ha</div><p>burned in Indonesia by July 2026 (RRI)</p></div>
+        </div>
+        <p class="cite">BlindSpot shows where land changed under the smoke. It does not say who caused it, and it does not link any patch to Singapore's air.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ---------- Method ---------- -->
+  <main id="page-method" class="page ed" data-page="method" hidden>
+    <div class="eyebrow c-radar">Method</div>
+    <h1 class="ed-h1">How BlindSpot works, and how sure it is.</h1>
+    <p class="ed-lede">A statistical test on radar change, a cross-check against the fire record, and an honest range around every number.</p>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">01</div><h2>Five steps</h2></div>
+      <div class="sec-b">
+        <ol class="steps">
+          <li><span class="st-n">01</span><div><div class="st-t">Prepare</div><div class="st-x">Stream only our 50 km study window from each NISAR GCOV image, HH and HV, and average it onto one 60 m grid.</div></div></li>
+          <li><span class="st-n">02</span><div><div class="st-t">Normalise</div><div class="st-x">Divide each date by its scene-wide ratio to the June and July reference, so rain, soil moisture and processing changes cancel.</div></div></li>
+          <li><span class="st-n">03</span><div><div class="st-t">Detect</div><div class="st-x">A sequential omnibus test (Conradsen 2016; Canty 2020) flags change at a 1% false-alarm rate. HV must stay at least 1 dB down for two dates; patches of 1 ha or more are kept.</div></div></li>
+          <li><span class="st-n">04</span><div><div class="st-t">Cross-check</div><div class="st-x">A patch counts as recorded if a VIIRS or MODIS hotspot lies within 1 km of it between the previous radar date and the change date.</div></div></li>
+          <li><span class="st-n">05</span><div><div class="st-t">Validate</div><div class="st-x">Synthetic burns test what we can detect; a Monte Carlo run gives the range; a labelled sample gives the error-adjusted area with a 95% interval (Olofsson 2014).</div></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">02</div><h2>How sure are we</h2></div>
+      <div class="sec-b">
+        <dl id="sure" class="sure"></dl>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">03</div><h2>Two labels, kept apart</h2></div>
+      <div class="sec-b">
+        <p>Every patch gets an automatic observation label and, after review, an interpretation. We never call an unmatched patch a missed fire.</p>
+        <div class="labels">
+          <div><div class="eyebrow">Observation</div><div class="lab"><i class="sw sw-rec"></i>Hotspot recorded</div><div class="lab"><i class="sw sw-none"></i>No hotspot recorded</div><div class="lab"><i class="sw sw-insuf"></i>Insufficient fire data</div></div>
+          <div><div class="eyebrow">Interpretation</div><div class="lab">Fire supported</div><div class="lab">Other disturbance</div><div class="lab">Unresolved · not assessable</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">04</div><h2>Data</h2></div>
+      <div class="sec-b">
+        <ul class="sources">
+          <li><a href="https://search.earthdata.nasa.gov">NISAR L2 GCOV (NASA, ASF DAAC)</a><span>Radar backscatter, 11 dates</span></li>
+          <li><a href="https://firms.modaps.eosdis.nasa.gov/api/area/">FIRMS VIIRS and MODIS (NASA)</a><span>The fire record we audit</span></li>
+          <li><a href="https://disc.gsfc.nasa.gov">GPM IMERG (NASA)</a><span>Rainfall, to rule out rain</span></li>
+          <li><a href="https://www.wur.nl/en/research/products-services/radd-forest-disturbance-alert">RADD alerts (Wageningen)</a><span>Independent check</span></li>
+          <li><a href="https://nasa-gibs.github.io/gibs-api-docs/">EONET and GIBS (NASA)</a><span>Events and imagery</span></li>
+          <li><a href="https://data.gov.sg/datasets/d_b4cf557f8750260d229c49fd768e11ed/view">Historical PSI (data.gov.sg)</a><span>Singapore's air</span></li>
+          <li><a href="https://visibleearth.nasa.gov/collection/1484/blue-marble">Blue Marble and Black Marble (NASA)</a><span>The globe on the start screen</span></li>
+        </ul>
+        <p class="cite">Research prototype using provisional NISAR data. It shows where land changed, not who caused it. Not for legal or enforcement use without verification on the ground. Data generated <span id="generated"></span>.</p>
+      </div>
+    </section>
+  </main>
+
+  <button id="to-top" class="to-top" type="button" aria-label="Back to top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></button>
+</div>
 
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.min.js"></script>
+<script src="globe.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

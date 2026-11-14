@@ -102,9 +102,10 @@ Written only by `python -m blindspot.s5_package.package`.
 
 | File | Content |
 |---|---|
-| `manifest.json` | `fixture`, `generated`, `study_bbox`, `bounds` (Leaflet `[[s,w],[n,e]]`), `dates`, `processing_version`, `overlays` (`{date: "overlays/hv_DATE.png"}`), `display_db_range` |
+| `manifest.json` | `fixture`, `generated`, `study_bbox`, `bounds` (Leaflet `[[s,w],[n,e]]`), `dates`, `processing_version`, `overlays` (`{date: "overlays/hv_DATE.png"}`), `display_db_range`. Optional: `inputs` (`{stack, patches, timeseries, hotspots, crosscheck, review, validation, psi, rain, events, peat}`: true when that input existed at packaging), `peat` (`{url, bounds}`). Without `stack.nc`, `dates` come from `config.ACQ_DATES`, `bounds` from the study box and `overlays` is `{}` |
 | `overlays/hv_YYYY-MM-DD.png` | HV in dB, stretched -20 to -5 dB, RGBA, EPSG:4326 |
-| `patches.geojson` | patches + `hotspot_status`, `n_hotspots`, `nearest_hotspot_km`, `confidence_tier`, `interpretation`, `notes` |
+| `overlays/peat.png` (optional) | WS4's `peat_mask.tif` as a translucent brown overlay |
+| `patches.geojson` | patches + `hotspot_status` (`unknown` until WS3 delivers), `n_hotspots`, `nearest_hotspot_km`, `confidence_tier` (`unrated` until WS4 delivers), `interpretation`, `notes`. Optional: `window_start`, `window_end` (from `crosscheck.csv`), `radd_agree` (true, false or null), `evidence_urls` (list) |
 | `hotspots.geojson` | points with `sensor, acq_date, confidence, frp` |
 | `timeseries.json` | as above |
 | `stats.json` | `{"crosscheck": <crosscheck_stats>, "validation": <validation_stats>}` |
