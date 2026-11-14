@@ -50,6 +50,12 @@ Six people on six machines, each owning one workstream. Workstreams connect only
 - **Exact dataset links and filters (use only these):** [`docs/DATASETS.md`](docs/DATASETS.md).
 - **File formats between workstreams:** [`docs/CONTRACTS.md`](docs/CONTRACTS.md).
 - **Using an AI assistant?** It reads [`AGENTS.md`](AGENTS.md) (Claude Code via `CLAUDE.md`). For a chat assistant, paste `AGENTS.md` and your workstream guide first.
+- **Map of the codebase (optional, recommended):** [Floorplan](https://github.com/haydenschmitty/floorplan) draws a plain-English, clickable map of this repo inside Claude Code or Codex. Each person installs it on their own machine (Node.js 18+):
+  ```bash
+  claude plugin marketplace add haydenschmitty/floorplan && claude plugin install floorplan@floorplan   # Claude Code
+  codex plugin marketplace add haydenschmitty/floorplan && codex plugin add floorplan@floorplan        # Codex
+  ```
+  Then ask "Make me a floorplan of this app" (later: "Update the floorplan"). Its `floorplan/` folder stays out of git, so nothing to commit.
 - **Code review:** every pull request is reviewed by CodeRabbit (config in `.coderabbit.yaml`) and one teammate.
 
 ## Commands
