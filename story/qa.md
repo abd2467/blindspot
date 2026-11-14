@@ -18,10 +18,10 @@ Rain and soil moisture shift backscatter, so each date is normalised against the
 It is a range, not a point. A Monte Carlo run varies hotspot positions within their pixel footprint, the matching buffer (0.5 to 2 km) and the time window, and reports the 5th to 95th percentile. A labelled reference sample gives the error-adjusted change area with a 95% interval (Olofsson et al., 2014), and synthetic burns injected into real radar data measure what we can detect.
 
 **Why only one track and one area?**
-Scope, honesty and time: 11 dual-polarisation NISAR dates exist on one track over a 2026 fire cluster near Sampit. One area done properly, with validation, is worth more than many done loosely. The pipeline is the same for any track.
+Scope, honesty and time: 11 dual-polarisation NISAR dates exist on one track over a 2026 fire cluster near Sampit. One area done properly, with validation, is worth more than many done loosely. The method does not depend on the place: a new area needs its own grid and dates in `config.py`, then the same pipeline runs. We have not run a second area yet.
 
 **What would it take to scale?**
-NISAR images most of the Earth's land every 12 days, and the pipeline streams only the window it needs and reruns in minutes on a laptop. Scaling means running it per track across Sumatra and Kalimantan through the season, so analysts see where the fire record went quiet within days, not months.
+NISAR images most of the Earth's land every 12 days, and the pipeline streams only the window it needs. Scaling means running it per track across Sumatra and Kalimantan through the season, so analysts see where the fire record went quiet within days, not months.
 
 **Why does Singapore care?**
 Singapore's 24-hour PSI went unhealthy on 4 September 2026 for the first time since 2023 and peaked at 192 on 9 October, with NEA tracing the smoke to Sumatra and Kalimantan. Fire evidence comes from the same hotspot record we audit. We do not link any patch to Singapore's air.
