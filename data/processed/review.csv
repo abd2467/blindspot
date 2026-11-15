@@ -498,7 +498,7 @@ P0496,medium,unreviewed,false,,
 P0497,low,not_assessable,false,,
 P0498,medium,unreviewed,false,,
 P0499,low,unreviewed,false,,
-P0500,medium,unreviewed,false,,
+P0500,medium,fire_supported,false,"Sentinel-2 L2A 21 Jun, 19 Sep and 14 Oct 2026: vegetated on 21 Jun; on 19 Sep still red-brown with a smoke plume rising from the south-east edge; on 14 Oct a dark burn scar fills the outline in false colour and SWIR, with active fire fronts and smoke just north-west; two hotspots within 1 km in window",https://browser.dataspace.copernicus.eu
 P0501,medium,unreviewed,false,,
 P0502,low,unreviewed,false,,
 P0503,medium,unreviewed,false,,
