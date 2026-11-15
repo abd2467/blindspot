@@ -74,6 +74,7 @@ Columns: `patch_id, hotspot_status, n_hotspots, nearest_hotspot_km, window_start
  "params": {...},
  "by_date": [{"date", "change_km2", "no_hotspot_km2", "n_hotspots"}]}
 ```
+Headline totals, the Monte Carlo range and `by_date` areas count only eligible patches: not `insufficient_data`, and not flagged `water` or `edge`. Optional: `excluded_flags` (list), `excluded_km2`, `no_hotspot_share_without_2026_08_17` (share without patches first seen on 17 Aug, the first pass after the 24-day gap).
 
 ### `data/processed/review.csv`: WS4 → S5
 Columns: `patch_id, confidence_tier, interpretation, radd_agree, notes, evidence_urls`.

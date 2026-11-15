@@ -67,22 +67,28 @@ def download():
                 url = API.format(key=key, source=src, area=area, days=STEP_DAYS, start=day.isoformat())
                 cached = FIRMS_DIR / f"{src}_{day.isoformat()}.csv"
                 if cached.exists():
-                    got += [(day + timedelta(i)).isoformat() for i in range(STEP_DAYS)]
-                    break
-                try:
-                    r = requests.get(url, timeout=180)
-                except requests.exceptions.RequestException as exc:
-                    print(f"  {src} {day}: {exc.__class__.__name__}, skipping (rerun to retry)")
-                    time.sleep(2)
+                    text = cached.read_text()
+                else:
+                    try:
+                        r = requests.get(url, timeout=180)
+                    except requests.exceptions.RequestException as exc:
+                        print(f"  {src} {day}: {exc.__class__.__name__}, skipping (rerun to retry)")
+                        time.sleep(2)
+                        continue
+                    if not (r.status_code == 200 and r.text.startswith("latitude")):
+                        print(f"  {src} {day}: {r.status_code} {r.text[:80]!r}")
+                        time.sleep(1)
+                        continue
+                    text = r.text
+                    part = cached.with_suffix(".part")  # write then rename: no half-written CSVs
+                    part.write_text(text)
+                    part.replace(cached)
+                if src == primary and fallback and len(text.strip().splitlines()) <= 1:
+                    # The standard archive lags months behind: an empty reply for recent days
+                    # means "not processed yet", so try the near-real-time feed.
                     continue
-                ok = r.status_code == 200 and r.text.startswith("latitude")
-                if ok:
-                    out = FIRMS_DIR / f"{src}_{day.isoformat()}.csv"
-                    out.write_text(r.text)
-                    got += [(day + timedelta(i)).isoformat() for i in range(STEP_DAYS)]
-                    break
-                print(f"  {src} {day}: {r.status_code} {r.text[:80]!r}")
-                time.sleep(1)
+                got += [(day + timedelta(i)).isoformat() for i in range(STEP_DAYS)]
+                break
             day += timedelta(days=STEP_DAYS)
         coverage[primary.split("_SP")[0].split("_NRT")[0]] = sorted(set(got))
         print(f"{primary}: {len(set(got))} days covered")
