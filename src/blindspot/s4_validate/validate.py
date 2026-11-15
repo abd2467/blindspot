@@ -2,6 +2,7 @@
 
     python -m blindspot.s4_validate.validate sample   # draw the stratified reference sample to label
     python -m blindspot.s4_validate.validate review   # create/refresh review.csv (confidence tiers)
+    python -m blindspot.s4_validate.validate radd-prep <export.tif>  # raw Earth Engine export -> data/raw/radd_alerts.tif
     python -m blindspot.s4_validate.validate radd     # agreement with RADD (needs data/raw/radd_alerts.tif)
     python -m blindspot.s4_validate.validate stats    # Olofsson area + CI, write validation_stats.json
 
@@ -130,6 +131,45 @@ def review():
     print(f"[S4] review.csv: {len(rows)} patches. Edit 'interpretation' for the patches you review.")
 
 
+def yydoy_to_days(a):
+    """Convert RADD 'Date' values (YYDOY, e.g. 26245) to days since 2014-12-31; 0 stays 0 (no alert)."""
+    from datetime import date
+
+    a = np.asarray(a, "int64")
+    epoch = date(2014, 12, 31).toordinal()
+    out = np.zeros(a.shape, "int32")
+    for yy in np.unique(a[a > 0] // 1000):
+        m = (a // 1000 == yy) & (a > 0)
+        out[m] = date(2000 + int(yy), 1, 1).toordinal() - epoch + a[m] % 1000 - 1
+    return out
+
+
+def radd_prepare(src_path):
+    """Put a raw Earth Engine RADD export (YYDOY dates, any 60 m window) on the analysis grid.
+
+    Writes data/raw/radd_alerts.tif with dates as days since 2014-12-31, which `radd` expects.
+    Grid cells outside the export are 0 (no alert).
+    """
+    import rasterio
+    from rasterio.warp import Resampling, reproject
+
+    from ..grid import coords, transform_from_coords
+
+    x, y = coords()
+    tf = transform_from_coords(x, y)
+    raw = np.zeros(C.GRID_SHAPE, "int32")
+    with rasterio.open(src_path) as s:
+        reproject(rasterio.band(s, 1), raw, dst_transform=tf, dst_crs=C.CRS,
+                  src_nodata=0, dst_nodata=0, resampling=Resampling.nearest)
+    days = yydoy_to_days(raw)
+    C.RAW.mkdir(parents=True, exist_ok=True)
+    out = C.RAW / "radd_alerts.tif"
+    with rasterio.open(out, "w", driver="GTiff", height=days.shape[0], width=days.shape[1], count=1,
+                       dtype="int32", crs=C.CRS, transform=tf, nodata=0, compress="deflate") as o:
+        o.write(days, 1)
+    print(f"[S4] {int((days > 0).sum())} alert pixels -> {out}")
+
+
 def radd():
     """Share of each patch covered by a RADD alert dated inside its window (data/raw/radd_alerts.tif).
 
@@ -184,4 +224,7 @@ def stats():
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "stats"
-    {"sample": sample, "review": review, "radd": radd, "stats": stats}[cmd]()
+    if cmd == "radd-prep":
+        radd_prepare(sys.argv[2])
+    else:
+        {"sample": sample, "review": review, "radd": radd, "stats": stats}[cmd]()
