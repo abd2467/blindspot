@@ -125,7 +125,8 @@ def _patches():
         pr["notes"] = r.get("notes", "")
         ra = (r.get("radd_agree") or "").strip().lower()
         pr["radd_agree"] = True if ra == "true" else False if ra == "false" else None
-        pr["evidence_urls"] = [u for u in re.split(r"[\s;|,]+", r.get("evidence_urls") or "") if u.startswith("http")]
+        # separators are whitespace, ";" or "|" (documented in CONTRACTS.md); commas can be part of a URL
+        pr["evidence_urls"] = [u for u in re.split(r"[\s;|]+", r.get("evidence_urls") or "") if u.startswith("http")]
     (C.WEB_DATA / "patches.geojson").write_text(json.dumps(gj))
 
 

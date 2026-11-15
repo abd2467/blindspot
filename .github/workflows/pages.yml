@@ -27,8 +27,13 @@ jobs:
       - name: Real outputs present?
         id: real
         run: |
-          if [ -f data/processed/patches.geojson ] || [ -f data/processed/crosscheck_stats.json ]; then
-            echo "yes=true" >> "$GITHUB_OUTPUT"; echo "Real outputs found: rebuilding web/data"
+          found=""
+          for f in patches.geojson crosscheck_stats.json crosscheck.csv hotspots.geojson review.csv \
+                   validation_stats.json psi_daily.csv rain_daily.csv eonet_events.geojson; do
+            [ -f "data/processed/$f" ] && found="$found $f"
+          done
+          if [ -n "$found" ]; then
+            echo "yes=true" >> "$GITHUB_OUTPUT"; echo "Real outputs found:$found. Rebuilding web/data"
           else
             echo "yes=false" >> "$GITHUB_OUTPUT"; echo "No real outputs yet: deploying committed demo data"
           fi

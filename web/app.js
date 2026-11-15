@@ -315,17 +315,25 @@
       layout: { padding: { top: 6, bottom: 0 } }
     };
   }
+  // Per-date areas for the bar chart. Built from the patches whenever the cross-check has
+  // labelled them, so "recorded" counts only patches with a hotspot and patches with
+  // insufficient fire data (or flags the headline leaves out) are not shown as recorded.
   function byDate() {
-    var c = D.stats && D.stats.crosscheck;
-    if (c && c.by_date) return c.by_date;
-    // fallback: build from the patches
+    var c = D.stats && D.stats.crosscheck, feats = (D.patches && D.patches.features) || [];
+    var skip = (c && c.excluded_flags) || [];
+    var labelled = feats.some(function (f) { var s = f.properties.hotspot_status; return s === 'recorded' || s === 'none'; });
+    if (!labelled && c && c.by_date) return c.by_date;
     return D.manifest.dates.map(function (d) {
-      var ch = 0, no = 0;
-      ((D.patches && D.patches.features) || []).forEach(function (f) {
+      var rec = 0, no = 0, all = 0;
+      feats.forEach(function (f) {
         var p = f.properties; if (p.first_change_date !== d) return;
-        ch += p.area_ha / 100; if (p.hotspot_status === 'none') no += p.area_ha / 100;
+        if ((p.flags || []).some(function (x) { return skip.indexOf(x) >= 0; })) return;
+        var a = p.area_ha / 100; all += a;
+        if (p.hotspot_status === 'recorded') rec += a;
+        else if (p.hotspot_status === 'none') no += a;
       });
-      return { date: d, change_km2: ch, no_hotspot_km2: no };
+      return labelled ? { date: d, change_km2: rec + no, recorded_km2: rec, no_hotspot_km2: no }
+                      : { date: d, change_km2: all, no_hotspot_km2: 0 };
     });
   }
   function drawBarChart() {
@@ -335,7 +343,7 @@
     var data = {
       labels: rows.map(function (r) { return lab(r.date); }),
       datasets: [
-        { label: 'Hotspot recorded', data: rows.map(function (r) { return Math.max(0, r.change_km2 - r.no_hotspot_km2); }), backgroundColor: dim(rec), stack: 's', borderSkipped: false, barPercentage: 0.56, categoryPercentage: 1 },
+        { label: 'Hotspot recorded', data: rows.map(function (r) { return r.recorded_km2 != null ? r.recorded_km2 : Math.max(0, r.change_km2 - r.no_hotspot_km2); }), backgroundColor: dim(rec), stack: 's', borderSkipped: false, barPercentage: 0.56, categoryPercentage: 1 },
         { label: 'No hotspot recorded', data: rows.map(function (r) { return r.no_hotspot_km2; }), backgroundColor: dim(none), stack: 's', borderSkipped: false, barPercentage: 0.56, categoryPercentage: 1 }
       ]
     };
@@ -433,8 +441,9 @@
   function renderWhyImages() {
     var bb = D.manifest.study_bbox, dates = D.manifest.dates, want = '2026-10-09';
     var near = dates.reduce(function (m, d) { return Math.abs(days(d, want)) < Math.abs(days(m, want)) ? d : m; }, dates[0]);
-    $('radar-img').src = ovr(near);
-    $('radar-date').textContent = labY(near);
+    var img = $('radar-img'), cap = $('radar-date');
+    if (ovr(near)) { img.src = ovr(near); img.hidden = false; cap.textContent = labY(near); }
+    else { img.removeAttribute('src'); img.hidden = true; cap.textContent = 'Radar image not processed yet'; }
     var layers = ['VIIRS_SNPP_CorrectedReflectance_TrueColor', 'MODIS_Terra_CorrectedReflectance_TrueColor'], tryN = 0;
     function src(layer) {
       return 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&STYLES=&FORMAT=image/jpeg&CRS=EPSG:4326'

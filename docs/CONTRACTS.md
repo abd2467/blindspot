@@ -77,7 +77,7 @@ Columns: `patch_id, hotspot_status, n_hotspots, nearest_hotspot_km, window_start
 
 ### `data/processed/review.csv`: WS4 → S5
 Columns: `patch_id, confidence_tier, interpretation, radd_agree, notes, evidence_urls`.
-`confidence_tier` ∈ `high, medium, low`. `interpretation` ∈ `fire_supported, other_disturbance, unresolved, not_assessable, unreviewed`. `radd_agree` is `true`, `false` or empty.
+`confidence_tier` ∈ `high, medium, low`. `interpretation` ∈ `fire_supported, other_disturbance, unresolved, not_assessable, unreviewed`. `radd_agree` is `true`, `false` or empty. `evidence_urls`: one or more `http(s)` links separated by spaces, `;` or `|` (not commas, which can be part of a URL).
 
 ### `data/processed/reference_sample.csv`: WS4 (internal)
 Columns: `point_id, stratum, lon, lat, label, labeller, notes`. `stratum` ∈ `change_hotspot, change_no_hotspot, no_change`. `label` ∈ `burn, clearing, flood, no_change, unclear`. With `strata_pixel_counts.json`.

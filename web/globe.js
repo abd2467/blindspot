@@ -212,7 +212,7 @@
       stop: stop,
       // roll the study area to the top of the arc, then dive into it
       dive: function () {
-        if (reduce || !globe) { if (opts.onReveal) opts.onReveal(); if (opts.onArrive) opts.onArrive(); return; }
+        if (reduce || !globe) { stop(); if (opts.onReveal) opts.onReveal(); if (opts.onArrive) opts.onArrive(); return; }
         var dLon = ((TARGET.lon - g.lon) % 360 + 540) % 360 - 180;
         if (Math.abs(dLon) < 70) dLon += dLon >= 0 ? 360 : -360;
         fly = { t0: performance.now(), rollMs: ROLL_MS, diveMs: DIVE_MS, lon0: g.lon, dLon: dLon, lat0: g.lat };
