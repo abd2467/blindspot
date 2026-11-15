@@ -302,3 +302,8 @@ button { font: inherit; color: inherit; }
   a, button, [role="button"], label, select, summary, .tick, .leaflet-interactive, .leaflet-container a, .leaflet-dragging .leaflet-grab { cursor: var(--cur-hot) !important; }
   input, textarea, [contenteditable="true"] { cursor: text; }
 }
+
+/* Basemap: dimmed so the radar and the patches stay on top visually */
+.leaflet-tile-pane .basemap { filter: brightness(.55) saturate(.8); }
+[data-theme="light"] .leaflet-tile-pane .basemap { filter: brightness(.95) saturate(.85); }
+.leaflet-tile-pane .basemap-ref { opacity: .55; }
