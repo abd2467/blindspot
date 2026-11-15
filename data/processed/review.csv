@@ -808,7 +808,7 @@ P0806,medium,unreviewed,false,,
 P0807,medium,unreviewed,false,,
 P0808,medium,unreviewed,false,,
 P0809,low,not_assessable,false,,
-P0810,medium,unreviewed,false,,
+P0810,medium,other_disturbance,false,"Sentinel-2 L2A 21 Jun vs 19 Sep 2026: open block among planted blocks; thin ground cover on 21 Jun, dry brown and tan on 19 Sep; no burn scar in true colour or SWIR; gradual radar decline from June; no hotspot in window; likely seasonal drying",https://browser.dataspace.copernicus.eu
 P0811,low,not_assessable,false,,
 P0812,low,not_assessable,false,,
 P0813,medium,unreviewed,false,,
