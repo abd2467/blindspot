@@ -25,6 +25,7 @@ from ..grid import pixel_area_ha
 
 STRATA = ("change_hotspot", "change_no_hotspot", "no_change")
 LABELS = ("burn", "clearing", "flood", "no_change", "unclear")
+POINT_PREFIX = {"change_hotspot": "CH", "change_no_hotspot": "CN", "no_change": "NC"}  # unique per stratum
 SAMPLE_PER_STRATUM = {"change_hotspot": 15, "change_no_hotspot": 20, "no_change": 15}
 
 
@@ -65,7 +66,7 @@ def sample(seed: int = 42):
         pick = rng.choice(rr.size, n, replace=False) if n else []
         for j, i in enumerate(pick):
             lon, lat = to_ll.transform(x[cc[i]], y[rr[i]])
-            rows.append({"point_id": f"{name[:2].upper()}{j:03d}", "stratum": name,
+            rows.append({"point_id": f"{POINT_PREFIX[name]}{j:03d}", "stratum": name,
                          "lon": round(lon, 6), "lat": round(lat, 6), "label": "", "labeller": "", "notes": ""})
     counts = {name: int((strata == k).sum()) for k, name in enumerate(STRATA)}
     out = C.PROCESSED / "reference_sample.csv"
