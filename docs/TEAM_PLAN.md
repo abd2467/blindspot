@@ -11,9 +11,9 @@ Write your name and GitHub username in the table in your first PR.
 | WS | Name | Owner | Folder you own | You produce | Guide |
 |---|---|---|---|---|---|
 | WS1 | Radar ingest | Elton(eltonleeyx-pixel) | `src/blindspot/s1_ingest/` | `stack.nc` | [WS1](workstreams/WS1_radar_ingest.md) |
-| WS2 | Change detection | Falih (@Falih2007) | `src/blindspot/s2_change/` | `change.nc`, `patches.geojson`, `timeseries.json`, `synthetic_curve.json` | [WS2](workstreams/WS2_change_detection.md) |
+| WS2 | Change detection | Falih (@Falih2007), Vallerose (@zwkrl) | `src/blindspot/s2_change/` | `change.nc`, `patches.geojson`, `timeseries.json`, `synthetic_curve.json` | [WS2](workstreams/WS2_change_detection.md) |
 | WS3 | Fire record | Adyan (adyanrashid) | `src/blindspot/s3_fire/` | `hotspots.geojson`, `crosscheck.csv`, `crosscheck_stats.json` | [WS3](workstreams/WS3_fire_record.md) |
-| WS4 | Validation and evidence | _name_ | `src/blindspot/s4_validate/` | `review.csv`, `reference_sample.csv`, `validation_stats.json`, `rain_daily.csv`, `peat_mask.tif` | [WS4](workstreams/WS4_validation.md) |
+| WS4 | Validation and evidence | Manasvin (@manasvin57) | `src/blindspot/s4_validate/` | `review.csv`, `reference_sample.csv`, `validation_stats.json`, `rain_daily.csv`, `peat_mask.tif` | [WS4](workstreams/WS4_validation.md) |
 | WS5 | Web app | Abdallah (@abd2467) | `web/` (not `web/data/`) | the deployed site | [WS5](workstreams/WS5_web_app.md) |
 | WS6 | Story, context, submission | Abdallah (@abd2467) | `src/blindspot/s6_context/`, `story/` | `psi_daily.csv`, `eonet_events.geojson`, slides or video, References | [WS6](workstreams/WS6_story_submission.md) |
 | Lead | Integration | Abdallah (@abd2467) | `config.py`, `contracts.py`, `s5_package/`, `scripts/`, `docs/` | `web/data/`, merges, final run | this page |

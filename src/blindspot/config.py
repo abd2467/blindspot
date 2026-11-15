@@ -72,6 +72,8 @@ PARAMS = {
     "omnibus_alpha": 0.01,           # false-alarm rate for the sequential omnibus test
     "min_consecutive_dates": 2,      # change must persist on this many dates
     "min_patch_ha": 1.0,             # smallest patch kept
+    "reference_drift_db": -1.0,      # HV already this far down across the reference dates: not eligible
+    "edge_buffer_km": 5.0,           # patches this close to the swath edge get the "edge" flag
     # S3 hotspot cross-check
     "buffer_km": 1.0,                # hotspot must be within this distance of the patch
     "window_slack_days": 0,          # extra days before the previous acquisition

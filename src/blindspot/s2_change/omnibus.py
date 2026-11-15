@@ -34,13 +34,22 @@ def _band_terms(X: np.ndarray, m: float):
     return lnQ, lnR
 
 
-def first_change(hh: np.ndarray, hv: np.ndarray, enl: float, alpha: float = 0.01):
+def first_change(hh: np.ndarray, hv: np.ndarray, enl: float, alpha: float = 0.01, eligible=None):
     """Return (first_change_index, p_value_at_change, omnibus_p).
 
     first_change_index is the image index (0-based) of the first significant change,
     or -1 where none. Only HV decreases count as change (canopy loss), so a change is
     kept only if HV at that image is lower than the mean of the images before it.
+    Optional eligible (time, y, x) applies persistence before selecting a date,
+    so a transient earlier fluctuation cannot hide a later persistent change.
     """
+    if hh.shape != hv.shape or hv.ndim != 3 or hv.shape[0] < 2:
+        raise ValueError("HH and HV must have matching (time, y, x) shapes with at least two dates")
+    if not np.isfinite(enl) or enl <= 0 or not 0 < alpha < 1:
+        raise ValueError("ENL must be positive and alpha must be in (0, 1)")
+    valid = np.all(np.isfinite(hh) & np.isfinite(hv) & (hh > 0) & (hv > 0), axis=0)
+    hh = np.where(valid[None], hh, 1.0)
+    hv = np.where(valid[None], hv, 1.0)
     k = hv.shape[0]
     lq_hh, lr_hh = _band_terms(hh, enl)
     lq_hv, lr_hv = _band_terms(hv, enl)
@@ -52,7 +61,11 @@ def first_change(hh: np.ndarray, hv: np.ndarray, enl: float, alpha: float = 0.01
     prev_mean = np.cumsum(hv, axis=0)[:-1] / np.arange(1, k)[:, None, None]
     decrease = hv[1:] < prev_mean
     sig = (p_r < alpha) & decrease & (p_q < alpha)[None]
+    sig &= valid[None]
+    if eligible is not None:
+        sig &= eligible[1:]
     has = sig.any(0)
     idx = np.where(has, sig.argmax(0) + 1, -1)
     p_at = np.where(has, np.take_along_axis(p_r, np.clip(idx - 1, 0, None)[None], 0)[0], np.nan)
+    p_q[~valid] = np.nan
     return idx.astype("int16"), p_at.astype("float32"), p_q.astype("float32")
