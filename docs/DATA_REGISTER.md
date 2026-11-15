@@ -9,7 +9,7 @@ Every external dataset, API, image and library we use. This feeds the Space Apps
 | NISAR water mask / DEM | NASA / ASF DAAC | Water masking | WS1 | NASA open data policy | https://search.earthdata.nasa.gov | |
 | NISAR L3 Soil Moisture (`NISAR_L3_SME2_PROVISIONAL_V1`) | NASA / ASF DAAC | Context | WS4 | NASA open data policy | https://search.earthdata.nasa.gov | |
 | FIRMS VIIRS 375 m and MODIS active fire | NASA LANCE / FIRMS | Hotspot record | WS3 | NASA open data policy | https://firms.modaps.eosdis.nasa.gov/api/area/ | |
-| GPM IMERG Late daily (`GPM_3IMERGDL`) | NASA GES DISC | Rainfall | WS4 | NASA open data policy | https://disc.gsfc.nasa.gov | |
+| GPM IMERG Late daily (`GPM_3IMERGDL`) | NASA GES DISC | Rainfall | WS4 | NASA open data policy | https://disc.gsfc.nasa.gov (via Giovanni area-averaged time series) | 2026-11-15 |
 | EONET wildfire events | NASA | Story markers | WS6 | NASA open data policy | https://eonet.gsfc.nasa.gov/api/v3/events | |
 | GIBS corrected reflectance | NASA | "Why radar" imagery | WS5 | NASA open data policy | https://gibs.earthdata.nasa.gov | live |
 | RADD forest disturbance alerts | Wageningen University & Research | Validation | WS4 | to check on the RADD page | https://www.wur.nl/en/research/products-services/radd-forest-disturbance-alert | 2026-11-15 |

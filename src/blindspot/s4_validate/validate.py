@@ -4,6 +4,7 @@
     python -m blindspot.s4_validate.validate review   # create/refresh review.csv (confidence tiers)
     python -m blindspot.s4_validate.validate radd-prep <export.tif>  # raw Earth Engine export -> data/raw/radd_alerts.tif
     python -m blindspot.s4_validate.validate peat-prep <peat.tif>    # Global Peatland Map -> data/processed/peat_mask.tif
+    python -m blindspot.s4_validate.validate rain-prep <giovanni.csv> # Giovanni area-average CSV -> data/processed/rain_daily.csv
     python -m blindspot.s4_validate.validate radd     # agreement with RADD (needs data/raw/radd_alerts.tif)
     python -m blindspot.s4_validate.validate stats    # Olofsson area + CI, write validation_stats.json
 
@@ -196,6 +197,26 @@ def peat_prepare(src_path):
     print(f"[S4] peat mask -> {out}; share of grid by class: {share}")
 
 
+def rain_prepare(src_path):
+    """Convert a Giovanni area-averaged time series CSV (GPM_3IMERGDL, mm/day) to rain_daily.csv.
+
+    Skips the metadata header and fill values; writes columns date, precip_mm.
+    """
+    rows = []
+    for line in open(src_path):
+        parts = [p.strip() for p in line.split(",")]
+        if len(parts) == 2 and len(parts[0]) >= 10 and parts[0][:4].isdigit() and parts[0][4] == "-":
+            v = float(parts[1])
+            if v > -9000:
+                rows.append({"date": parts[0][:10], "precip_mm": round(v, 2)})
+    out = C.PROCESSED / "rain_daily.csv"
+    with open(out, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["date", "precip_mm"])
+        w.writeheader()
+        w.writerows(rows)
+    print(f"[S4] {len(rows)} days ({rows[0]['date']} to {rows[-1]['date']}) -> {out}")
+
+
 def radd():
     """Share of each patch covered by a RADD alert dated inside its window (data/raw/radd_alerts.tif).
 
@@ -252,6 +273,8 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "stats"
     if cmd == "radd-prep":
         radd_prepare(sys.argv[2])
+    elif cmd == "rain-prep":
+        rain_prepare(sys.argv[2])
     elif cmd == "peat-prep":
         peat_prepare(sys.argv[2])
     else:
