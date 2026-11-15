@@ -104,7 +104,7 @@ P0102,medium,unreviewed,false,,
 P0103,medium,unreviewed,false,,
 P0104,medium,unreviewed,false,,
 P0105,low,unreviewed,false,,
-P0106,low,not_assessable,false,,
+P0106,low,fire_supported,false,Sentinel-2 L2A: dark maroon burn scar inside the outline in SWIR after the change window; no water seen in the patch despite the water flag; 11 hotspots within 1 km in window (image dates and extent of scar to be added),https://browser.dataspace.copernicus.eu
 P0107,medium,unreviewed,false,,
 P0108,medium,unreviewed,false,,
 P0109,medium,unreviewed,false,,
