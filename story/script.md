@@ -1,13 +1,22 @@
-# 30-second video script (draft for WS6)
+# Demo script: 7 slides
 
-Numbers in [brackets] come from `web/data/stats.json` on the final run. Never type them from memory.
+**Format decision (WS6 step 2):** slides, not video. Seven slides including the title, built in the BlindSpot Slides deck (link in `story/slides.md`). The same words are the deck's speaker notes, so a judge reading the deck alone and a judge hearing the pitch get the same story. Theme and wording rules: `story/THEME.md`.
 
-| Time | Picture | Words (subtitle) |
-|---|---|---|
-| 0-4 s | GIBS true colour, 9 Oct 2026: grey smoke over Kalimantan | "October 2026. Singapore's haze hits PSI 192. From space, Kalimantan is just smoke." |
-| 4-9 s | Same place, NISAR radar | "NISAR's radar sees straight through it." |
-| 9-17 s | App timeline playing June to October; patches appear; hotspot dots light up some | "Blindspot maps every patch of land that changed, and checks it against the fire satellites' hotspot record." |
-| 17-24 s | Headline panel | "[Z]% of the change had no hotspot recorded. Range [c] to [d]%." |
-| 24-30 s | Patch inspector, then title card | "Blindspot. What the hotspots missed. Built on NASA NISAR, FIRMS and GIBS." |
+Numbers in **[brackets]** come from `web/data/stats.json` after the 19:00 integration run. Until then the deck shows demo values marked "DEMO". Never type them from memory.
 
-Rules: English subtitles burned in; 1080p; record the deployed app; headline on screen at least 4 seconds; say "no hotspot recorded", never "missed fires".
+| # | Act | Slide | Say (about 20 seconds each) |
+|---|---|---|---|
+| 1 | - | **BlindSpot. What the hotspots missed.** NISAR's radar audits the fire hotspot record under Indonesia's 2026 haze. | "We're BlindSpot. We used NASA's new NISAR radar to check what the fire record missed during this year's haze." |
+| 2 | Fire | **Fire satellites look for heat. Smoke, cloud and peat can hide it.** Opens on Singapore: "Singapore breathed this haze", NEA tied the plumes to Sumatra and Kalimantan. PSI 192 on 9 Oct 2026; detection of even powerful fires can drop below 30% (MODIS) and 40% (VIIRS) near the equator; peat smoulders out of sight. | "Many of us breathed this haze. In October Singapore's air hit PSI 192, and NEA tied the plumes to fires in Sumatra and Kalimantan. The satellites that count those fires look for heat. Cloud and smoke can hide it, and peat smoulders underground, so even powerful fires can go unrecorded. We wanted to know how much land change the hotspot record missed, and when." |
+| 3 | Dry | **Radar keeps listening.** Real NASA VIIRS true-colour image of the study area on 22 Sep 2026 (smoke plumes, study box outlined). NISAR's 24 cm L-band passes through smoke; four calm June/July passes set the baseline. | "This is our study area on 22 September, as an optical satellite saw it: smoke from many fires, and cloud. NISAR sends its own 24-centimetre wave, which passes straight through smoke. When a canopy burns or is cleared, the signal drops and stays down. Four calm passes in June and July tell us what normal looks like." |
+| 4 | - | **How it works.** 11 NISAR dates, 18 Jun to 28 Oct → statistical change test → change patches → FIRMS cross-check (1 km, matching dates) → headline with a range, then validation. | "Eleven NISAR dates over a peat landscape near Sampit. A statistical test finds where and when the land changed. Each patch is checked against NASA FIRMS hotspots within a kilometre and the right dates." |
+| 5 | Fire to Rain | **The season (real data).** 71% of radar-detected change had no fire hotspot recorded, range 61 to 75%, over 122 km² (water and edge patches left out); 59% without 17 Aug, the first pass after a 24-day gap. Late Aug to Sep: 82% unrecorded; October: 23%. Built with `python story/make_season_slide.py web/data/stats.json <out.html>`. | "Look at the start of the fire season: on 10 September the radar found 13.1 square kilometres of change, and 97 percent of it had no hotspot within a kilometre, though the wider area logged 3,335 hotspots in those 12 days. From late August to September, 82 percent of change had no hotspot recorded; by October, when the haze peaked in Singapore, only 23 percent. Over the season, 71 percent, a range of 61 to 75." |
+| 6 | - | **How sure we are.** Fake burns of about 3 ha and up found in every trial at drops of 4 dB or more; false alarms on 0.006% of stable land; headline range 61 to 75% over 300 Monte Carlo runs; labelled sample and RADD agreement pending (WS4). | "We injected fake burns into the real radar to measure what we can detect, and the headline is a range, not a point. We never call an unmatched patch a missed fire: it is a place to look." |
+| 7 | - | **A place to look, every 12 days.** Who (especially early in the fire season), scale, open; real map from the live site; wordmark; disclaimer. | "The first burns of the season are the ones the hotspot record missed most, and the ones worth catching early. NISAR covers almost all of Earth's land every 12 days. It's open source and live at blindspotsg.earth." |
+
+## Before submitting
+
+1. Rebuild slide 5 from the real `web/data/stats.json` with `story/make_season_slide.py` (drop the `demo` flag), replace the DEMO values on slide 6, and swap the slide 7 map for a screenshot of the live site.
+2. Add team names on slide 1.
+3. Check every number against its source column in `docs/BRIEF.md` section 3 or `stats.json`.
+4. Export the deck to PDF as a backup, in case the judges' view needs a file.
