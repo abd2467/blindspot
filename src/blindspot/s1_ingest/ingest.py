@@ -92,11 +92,15 @@ def build(limit: int | None = None):
     stack_hh, stack_hv, times, versions = [], [], [], []
     for r in gr:
         print("reading", r["name"])
-        with earthaccess.open([r["urls"][0]])[0] as fobj, h5py.File(fobj, "r") as h5:
-            epsg = int(np.asarray(h5[GCOV_PATHS["epsg"]]).item())
-            src_crs = CRS.from_epsg(epsg)
-            b = transform_bounds(dst_crs, src_crs, *C.GRID_BOUNDS)
-            hh, hv, x, y = _read_window(h5, b)
+        fobj = earthaccess.open([r["urls"][0]])[0]
+        try:
+            with h5py.File(fobj, "r") as h5:
+                epsg = int(np.asarray(h5[GCOV_PATHS["epsg"]]).item())
+                src_crs = CRS.from_epsg(epsg)
+                b = transform_bounds(dst_crs, src_crs, *C.GRID_BOUNDS)
+                hh, hv, x, y = _read_window(h5, b)
+        finally:
+            fobj.close()  # close the remote stream even if the read fails
         res = abs(float(x[1] - x[0]))
         src_tf = transform_from_coords(x, y, res=res)
         out = []
@@ -112,19 +116,38 @@ def build(limit: int | None = None):
         versions.append(next((p for p in r["name"].split("_") if p.startswith("P0")), "unknown"))
 
     hv_arr = np.stack(stack_hv)
-    # Water: WS1 replaces this with the NISAR_WATERMASK product. Fallback: very dark HV in every date.
-    water = (np.nanmedian(10 * np.log10(hv_arr), axis=0) < -20).astype("uint8")
+    water, water_note = _water_layer(hv_arr, gx, gy)
+    no_data = float(np.mean(np.all(~np.isfinite(hv_arr), axis=0)))
     ds = xr.Dataset(
         {"hh": (("time", "y", "x"), np.stack(stack_hh)), "hv": (("time", "y", "x"), hv_arr),
          "water": (("y", "x"), water)},
         coords={"time": np.array(times, dtype="datetime64[ns]"), "y": gy, "x": gx,
                 "processing_version": ("time", versions)},
         attrs={"crs": C.CRS, "enl": 0.0, "track": C.NISAR_TRACK, "frame": C.NISAR_FRAME, "fixture": 0,
-               "notes": "enl=0 means unknown; S2 estimates the effective looks from the reference dates."},
+               "notes": ("HH/HV are linear gamma0 (gamma-naught) power from NISAR GCOV, "
+                         "averaged onto the 60 m grid. "
+                         "enl=0 means unknown; S2 estimates the effective looks from the reference dates. "
+                         f"{water_note} "
+                         f"{no_data:.1%} of the grid has no radar data on any date (swath edge); "
+                         "mask it and a buffer next to it downstream.")},
     )
     C.INTERIM.mkdir(parents=True, exist_ok=True)
     ds.to_netcdf(C.INTERIM / "stack.nc")
     print(f"stack.nc written: {len(times)} dates, grid {C.GRID_SHAPE}")
+
+
+def _water_layer(hv_arr, gx, gy):
+    """Return (water, note): the NISAR reference water mask if its tiles are in data/raw, else dark HV.
+
+    Fallback: median HV below -20 dB over all dates.
+    """
+    from .watermask import build_water_mask
+    try:
+        return build_water_mask(gx, gy), "Water: NISAR_WATERMASK v0.5.0 reference mask, nearest-neighbour."
+    except (FileNotFoundError, ValueError) as err:
+        print(f"reference water mask not used ({err}); falling back to dark HV")
+        water = (np.nanmedian(10 * np.log10(hv_arr), axis=0) < -20).astype("uint8")
+        return water, "Water: fallback, median HV below -20 dB over all dates."
 
 
 def main():
