@@ -139,6 +139,21 @@ def persistent(mask_t: np.ndarray, n: int) -> np.ndarray:
     return out
 
 
+def reference_drift(lr, ref_idx, limit=None):
+    """True where normalised HV fell by `limit` dB or more within the reference dates."""
+    limit = C.PARAMS["reference_drift_db"] if limit is None else limit
+    if len(ref_idx) < 4:
+        return np.zeros(lr.shape[1:], bool)
+    half = len(ref_idx) // 2
+    with np.errstate(all="ignore"):
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            early = np.nanmean(lr[ref_idx[:half]], axis=0)
+            late = np.nanmean(lr[ref_idx[half:]], axis=0)
+    return np.nan_to_num(late - early, nan=0.0) <= limit
+
+
 def detect_arrays(hh, hv, water, times, enl, method="omnibus",
                   threshold=C.PARAMS["logratio_threshold_db"], alpha=C.PARAMS["omnibus_alpha"], smooth=3,
                   stable_mask=None):
@@ -160,6 +175,10 @@ def detect_arrays(hh, hv, water, times, enl, method="omnibus",
     ncons = C.PARAMS["min_consecutive_dates"]
     eligible = persistent(lr <= -1.0, ncons) & valid[None]
     eligible[:max(ref_idx) + 1] = False
+    # Reference check promised in config.REFERENCE_DATES: pixels whose HV was already
+    # falling across the reference dates (late half vs early half) are not eligible,
+    # so seasonal drying that starts in July is not read as later change.
+    eligible &= ~reference_drift(lr, ref_idx)[None]
     if method == "logratio":
         if threshold == "auto":
             # noise tail: 1st percentile of the reference-date ratios
@@ -252,6 +271,12 @@ def make_patches(ch, ds, lr, times):
     near_edge = binary_dilation(invalid, structure=np.ones((3, 3)))
     near_edge[[0, -1], :] = True
     near_edge[:, [0, -1]] = True
+    # Swath edge: speckle and dark-edge artefacts rise within a few km of the no-data gap.
+    gap = np.all(~(np.isfinite(ds.hv.values) & (ds.hv.values > 0)), axis=0)
+    if gap.any():
+        from scipy.ndimage import distance_transform_edt
+        res_km = abs(float(ds.x.values[1] - ds.x.values[0])) / 1000
+        near_edge |= distance_transform_edt(~gap) * res_km <= C.PARAMS["edge_buffer_km"]
     pv = list(ds.processing_version.values)
 
     feats, series = [], {}
