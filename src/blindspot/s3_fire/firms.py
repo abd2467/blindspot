@@ -65,7 +65,16 @@ def download():
                 if not src:
                     continue
                 url = API.format(key=key, source=src, area=area, days=STEP_DAYS, start=day.isoformat())
-                r = requests.get(url, timeout=60)
+                cached = FIRMS_DIR / f"{src}_{day.isoformat()}.csv"
+                if cached.exists():
+                    got += [(day + timedelta(i)).isoformat() for i in range(STEP_DAYS)]
+                    break
+                try:
+                    r = requests.get(url, timeout=180)
+                except requests.exceptions.RequestException as exc:
+                    print(f"  {src} {day}: {exc.__class__.__name__}, skipping (rerun to retry)")
+                    time.sleep(2)
+                    continue
                 ok = r.status_code == 200 and r.text.startswith("latitude")
                 if ok:
                     out = FIRMS_DIR / f"{src}_{day.isoformat()}.csv"
