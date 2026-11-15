@@ -1,21 +1,21 @@
 {
  "total_change_km2": 121.691,
- "no_hotspot_km2": 89.888,
- "no_hotspot_share": 0.7387,
+ "no_hotspot_km2": 86.22,
+ "no_hotspot_share": 0.7085,
  "excluded_flags": [
   "water",
   "edge"
  ],
  "excluded_km2": 86.854,
- "no_hotspot_share_without_2026_08_17": 0.628,
+ "no_hotspot_share_without_2026_08_17": 0.5871,
  "n_patches": 1760,
- "n_recorded": 326,
- "n_none": 1434,
+ "n_recorded": 385,
+ "n_none": 1375,
  "n_insufficient": 0,
  "mc": {
-  "p05": 0.6358,
-  "p50": 0.6979,
-  "p95": 0.7828,
+  "p05": 0.6072,
+  "p50": 0.6759,
+  "p95": 0.7549,
   "runs": 300
  },
  "params": {
@@ -62,44 +62,44 @@
   {
    "date": "2026-08-17",
    "change_km2": 60.678,
-   "no_hotspot_km2": 51.574,
-   "n_hotspots": 782
+   "no_hotspot_km2": 50.4,
+   "n_hotspots": 1824
   },
   {
    "date": "2026-08-29",
    "change_km2": 8.734,
-   "no_hotspot_km2": 7.798,
-   "n_hotspots": 1653
+   "no_hotspot_km2": 7.549,
+   "n_hotspots": 4433
   },
   {
    "date": "2026-09-10",
    "change_km2": 13.068,
-   "no_hotspot_km2": 12.805,
-   "n_hotspots": 1109
+   "no_hotspot_km2": 12.712,
+   "n_hotspots": 3335
   },
   {
    "date": "2026-09-22",
    "change_km2": 15.275,
-   "no_hotspot_km2": 10.541,
-   "n_hotspots": 2684
+   "no_hotspot_km2": 10.174,
+   "n_hotspots": 9422
   },
   {
    "date": "2026-10-04",
    "change_km2": 8.518,
-   "no_hotspot_km2": 3.881,
-   "n_hotspots": 1905
+   "no_hotspot_km2": 2.47,
+   "n_hotspots": 5776
   },
   {
    "date": "2026-10-16",
    "change_km2": 15.419,
-   "no_hotspot_km2": 3.29,
-   "n_hotspots": 2208
+   "no_hotspot_km2": 2.916,
+   "n_hotspots": 6678
   },
   {
    "date": "2026-10-28",
    "change_km2": 0.0,
    "no_hotspot_km2": 0.0,
-   "n_hotspots": 2111
+   "n_hotspots": 7087
   }
  ]
 }
