@@ -92,11 +92,13 @@ def build(limit: int | None = None):
     stack_hh, stack_hv, times, versions = [], [], [], []
     for r in gr:
         print("reading", r["name"])
-        with earthaccess.open([r["urls"][0]])[0] as fobj, h5py.File(fobj, "r") as h5:
+        fobj = earthaccess.open([r["urls"][0]])[0]
+        with h5py.File(fobj, "r") as h5:
             epsg = int(np.asarray(h5[GCOV_PATHS["epsg"]]).item())
             src_crs = CRS.from_epsg(epsg)
             b = transform_bounds(dst_crs, src_crs, *C.GRID_BOUNDS)
             hh, hv, x, y = _read_window(h5, b)
+        fobj.close()
         res = abs(float(x[1] - x[0]))
         src_tf = transform_from_coords(x, y, res=res)
         out = []
