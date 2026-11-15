@@ -18,6 +18,7 @@ Every external dataset, API, image and library we use. This feeds the Space Apps
 | Historical 24-hr PSI | NEA via data.gov.sg | Singapore timeline | WS6 | Singapore Open Data Licence | https://data.gov.sg/datasets/d_b4cf557f8750260d229c49fd768e11ed/view | |
 | OpenStreetMap tiles | OpenStreetMap contributors | Not used since the WS5 redesign (no base map); keep the row if a base map returns | WS5 | ODbL, attribution required | https://www.openstreetmap.org/copyright | |
 | Leaflet, Chart.js | open source | Web app | WS5 | BSD-2 / MIT | https://leafletjs.com, https://www.chartjs.org | |
+| KaTeX 0.16.47 (js, css, woff2 fonts) | open source | Method page formulas (`web/vendor/katex/`) | WS5 | MIT | https://katex.org | 2026-11-15 |
 | Blue Marble (day) and Black Marble (night) Earth textures, plus a water mask | NASA Visible Earth, via the `three-globe` example images | Globe on the start screen (`web/assets/globe/`) | WS5 | NASA imagery: public domain; three-globe: MIT. Exact source images to check | https://visibleearth.nasa.gov/collection/1484/blue-marble | 2026-11-14 |
 | Space Grotesk, Inter, JetBrains Mono (woff2) | Florian Karsten; Rasmus Andersson; JetBrains, via Fontsource | Web app type (`web/vendor/fonts/`) | WS5 | SIL Open Font License 1.1 | https://fontsource.org | 2026-11-14 |
 

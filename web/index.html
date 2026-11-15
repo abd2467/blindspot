@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/brand/blindspot-mark-on-dark.svg">
 <link rel="preload" href="vendor/fonts/space-grotesk-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -237,45 +238,45 @@
 
         <div class="eq-block">
           <div class="eq-t">Scene normalisation</div>
-          <div class="eq"><span><var>X&#771;</var><sub><i>t</i></sub> = <var>X</var><sub><i>t</i></sub> &frasl; median<sub>land</sub>(<var>X</var><sub><i>t</i></sub> &frasl; <var>X&#772;</var><sub>ref</sub>)</span><span class="eq-n">(1)</span></div>
+          <div class="eq"><span class="tex" data-tex="\tilde X_t = \dfrac{X_t}{\operatorname{median}_{\text{land}}\!\left( X_t \,/\, \bar X_{\text{ref}} \right)}"><var>X&#771;</var><sub><i>t</i></sub> = <var>X</var><sub><i>t</i></sub> &frasl; median<sub>land</sub>(<var>X</var><sub><i>t</i></sub> &frasl; <var>X&#772;</var><sub>ref</sub>)</span><span class="eq-n">(1)</span></div>
           <p class="eq-x"><var>X&#772;</var><sub>ref</sub> is the mean of the four June and July reference dates. Dividing by the scene-wide median ratio cancels rain, soil moisture and calibration shifts that move the whole scene at once.</p>
         </div>
 
         <div class="eq-block">
           <div class="eq-t">Change in decibels</div>
-          <div class="eq"><span><i>r</i><sub><i>t</i></sub> = 10 log<sub>10</sub>(<var>X&#771;</var><sup>HV</sup><sub><i>t</i></sub> &frasl; <var>X&#772;</var><sup>HV</sup><sub>ref</sub>)</span><span class="eq-n">(2)</span></div>
+          <div class="eq"><span class="tex" data-tex="r_t = 10\,\log_{10}\!\left( \dfrac{\tilde X^{\mathrm{HV}}_t}{\bar X^{\mathrm{HV}}_{\text{ref}}} \right)\ \text{dB}"><i>r</i><sub><i>t</i></sub> = 10 log<sub>10</sub>(<var>X&#771;</var><sup>HV</sup><sub><i>t</i></sub> &frasl; <var>X&#772;</var><sup>HV</sup><sub>ref</sub>)</span><span class="eq-n">(2)</span></div>
           <p class="eq-x">After a 3&times;3 boxcar average. Canopy loss lowers HV, so change must have <i>r</i><sub><i>t</i></sub> &le; &minus;1 dB on at least two consecutive dates.</p>
         </div>
 
         <div class="eq-block">
           <div class="eq-t">Effective number of looks, measured</div>
-          <div class="eq"><span><i>m</i> = &Sigma;<sub>pixels</sub> <span class="ov">X</span><sup>2</sup> &frasl; &Sigma;<sub>pixels</sub> <i>s</i><sup>2</sup> &minus; 1&frasl;<i>n</i><sub>ref</sub></span><span class="eq-n">(3)</span></div>
+          <div class="eq"><span class="tex" data-tex="m = \dfrac{\sum_{\text{pixels}} \bar X^{2}}{\sum_{\text{pixels}} s^{2}} - \dfrac{1}{n_{\text{ref}}}"><i>m</i> = &Sigma;<sub>pixels</sub> <span class="ov">X</span><sup>2</sup> &frasl; &Sigma;<sub>pixels</sub> <i>s</i><sup>2</sup> &minus; 1&frasl;<i>n</i><sub>ref</sub></span><span class="eq-n">(3)</span></div>
           <p class="eq-x">Mean and variance of each land pixel over the <i>n</i><sub>ref</sub> = 4 reference dates, pooled, with a finite-sample correction. Measured, not assumed: on the real stack <i>m</i> &asymp; 181 after averaging.</p>
         </div>
 
         <div class="eq-block">
           <div class="eq-t">Sequential omnibus test (Conradsen 2016; Canty 2020)</div>
-          <div class="eq"><span>ln <i>R</i><sub><i>j</i></sub> = <i>m</i> [ <i>j</i> ln <i>j</i> &minus; (<i>j</i>&minus;1) ln(<i>j</i>&minus;1) + (<i>j</i>&minus;1) ln <i>S</i><sub><i>j</i>&minus;1</sub> + ln <var>X&#771;</var><sub><i>j</i></sub> &minus; <i>j</i> ln <i>S</i><sub><i>j</i></sub> ]</span><span class="eq-n">(4)</span></div>
-          <div class="eq"><span>&minus;2 (ln <i>R</i><sub><i>j</i></sub><sup>HH</sup> + ln <i>R</i><sub><i>j</i></sub><sup>HV</sup>) ~ &chi;<sup>2</sup>(2) &nbsp; under no change</span><span class="eq-n">(5)</span></div>
+          <div class="eq"><span class="tex" data-tex="\ln R_j = m\left[\, j\ln j - (j-1)\ln(j-1) + (j-1)\ln S_{j-1} + \ln \tilde X_j - j\ln S_j \,\right]">ln <i>R</i><sub><i>j</i></sub> = <i>m</i> [ <i>j</i> ln <i>j</i> &minus; (<i>j</i>&minus;1) ln(<i>j</i>&minus;1) + (<i>j</i>&minus;1) ln <i>S</i><sub><i>j</i>&minus;1</sub> + ln <var>X&#771;</var><sub><i>j</i></sub> &minus; <i>j</i> ln <i>S</i><sub><i>j</i></sub> ]</span><span class="eq-n">(4)</span></div>
+          <div class="eq"><span class="tex" data-tex="-2\left(\ln R_j^{\mathrm{HH}} + \ln R_j^{\mathrm{HV}}\right) \;\sim\; \chi^2_{2} \quad \text{under no change}">&minus;2 (ln <i>R</i><sub><i>j</i></sub><sup>HH</sup> + ln <i>R</i><sub><i>j</i></sub><sup>HV</sup>) ~ &chi;<sup>2</sup>(2) &nbsp; under no change</span><span class="eq-n">(5)</span></div>
           <p class="eq-x"><i>S</i><sub><i>j</i></sub> = <var>X&#771;</var><sub>1</sub> + &hellip; + <var>X&#771;</var><sub><i>j</i></sub>. <i>R</i><sub><i>j</i></sub> tests &ldquo;date <i>j</i> differs from all dates before it&rdquo;; the two bands are independent, so their statistics add. A pixel changes at the first <i>j</i> where <i>p</i> &lt; &alpha; = 0.01, the whole-series omnibus test also rejects, HV fell, and rule (2) holds. Connected changed pixels form patches; patches under 1 ha are dropped.</p>
         </div>
 
         <div class="eq-block">
           <div class="eq-t">Cross-check and headline</div>
-          <div class="eq"><span>recorded(<i>P</i>) &hArr; &exist; hotspot <i>h</i>: <i>d</i>(<i>h</i>, <i>P</i>) &le; <i>b</i> and <i>t</i><sub>prev</sub> &minus; <i>s</i> &lt; <i>t</i><sub><i>h</i></sub> &le; <i>t</i><sub>change</sub></span><span class="eq-n">(6)</span></div>
-          <div class="eq"><span>share = &Sigma;<sub><i>P</i>: none</sub> <i>A</i><sub><i>P</i></sub> &frasl; &Sigma;<sub><i>P</i>: eligible</sub> <i>A</i><sub><i>P</i></sub></span><span class="eq-n">(7)</span></div>
+          <div class="eq"><span class="tex" data-tex="\text{recorded}(P) \iff \exists\, h:\ d(h,P) \le b \ \text{and}\ t_{\text{prev}} - s \lt t_h \le t_{\text{change}}">recorded(<i>P</i>) &hArr; &exist; hotspot <i>h</i>: <i>d</i>(<i>h</i>, <i>P</i>) &le; <i>b</i> and <i>t</i><sub>prev</sub> &minus; <i>s</i> &lt; <i>t</i><sub><i>h</i></sub> &le; <i>t</i><sub>change</sub></span><span class="eq-n">(6)</span></div>
+          <div class="eq"><span class="tex" data-tex="\text{share} = \dfrac{\sum_{P\,\in\,\text{none}} A_P}{\sum_{P\,\in\,\text{eligible}} A_P}">share = &Sigma;<sub><i>P</i>: none</sub> <i>A</i><sub><i>P</i></sub> &frasl; &Sigma;<sub><i>P</i>: eligible</sub> <i>A</i><sub><i>P</i></sub></span><span class="eq-n">(7)</span></div>
           <p class="eq-x">Central estimate: buffer <i>b</i> = 1 km, date slack <i>s</i> = 0. Eligible patches have full fire-data coverage and no water or swath-edge flag. Area-weighted, so one large patch counts more than a speck.</p>
         </div>
 
         <div class="eq-block">
           <div class="eq-t">Monte Carlo range</div>
-          <div class="eq"><span>share<sub><i>k</i></sub> = (7) with <i>h</i> + &epsilon;<sub><i>k</i></sub>, &nbsp;<i>b</i><sub><i>k</i></sub> ~ U(0.5, 2) km, &nbsp;<i>s</i><sub><i>k</i></sub> ~ U{0,&hellip;,12} days, &nbsp;<i>k</i> = 1&hellip;300</span><span class="eq-n">(8)</span></div>
+          <div class="eq"><span class="tex" data-tex="\text{share}_k = (7)\ \text{with}\ h+\varepsilon_k,\ \ b_k \sim U(0.5,\,2)\ \text{km},\ \ s_k \sim U\{0,\dots,12\}\ \text{days},\ \ k=1,\dots,300">share<sub><i>k</i></sub> = (7) with <i>h</i> + &epsilon;<sub><i>k</i></sub>, &nbsp;<i>b</i><sub><i>k</i></sub> ~ U(0.5, 2) km, &nbsp;<i>s</i><sub><i>k</i></sub> ~ U{0,&hellip;,12} days, &nbsp;<i>k</i> = 1&hellip;300</span><span class="eq-n">(8)</span></div>
           <p class="eq-x">&epsilon;<sub><i>k</i></sub> moves each hotspot uniformly within its pixel footprint (VIIRS &plusmn;187.5 m, MODIS &plusmn;500 m). We report the 5th to 95th percentile of the 300 shares as the range.</p>
         </div>
 
         <div class="eq-block">
           <div class="eq-t">Error-adjusted area (Olofsson 2014)</div>
-          <div class="eq"><span><i>&Acirc;</i> = <i>A</i><sub>tot</sub> &Sigma;<sub><i>i</i></sub> <i>W</i><sub><i>i</i></sub> <i>n</i><sub><i>i</i>c</sub> &frasl; <i>n</i><sub><i>i</i>&middot;</sub>, &nbsp; 95% CI = <i>&Acirc;</i> &plusmn; 1.96 SE</span><span class="eq-n">(9)</span></div>
+          <div class="eq"><span class="tex" data-tex="\hat A = A_{\text{tot}} \sum_i W_i\, \dfrac{n_{ic}}{n_{i\cdot}}, \qquad \text{95\% CI} = \hat A \pm 1.96\, \widehat{\mathrm{SE}}(\hat A)"><i>&Acirc;</i> = <i>A</i><sub>tot</sub> &Sigma;<sub><i>i</i></sub> <i>W</i><sub><i>i</i></sub> <i>n</i><sub><i>i</i>c</sub> &frasl; <i>n</i><sub><i>i</i>&middot;</sub>, &nbsp; 95% CI = <i>&Acirc;</i> &plusmn; 1.96 SE</span><span class="eq-n">(9)</span></div>
           <p class="eq-x">From a stratified sample of points labelled on optical imagery: <i>W</i><sub><i>i</i></sub> is the map share of stratum <i>i</i>, <i>n</i><sub><i>i</i>c</sub> the points in it labelled as change. Corrects the mapped area for omission and commission errors.</p>
         </div>
       </div>
@@ -339,6 +340,7 @@
 
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.min.js"></script>
+<script src="vendor/katex/katex.min.js"></script>
 <script src="globe.js"></script>
 <script src="app.js"></script>
 </body>

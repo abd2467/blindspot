@@ -48,7 +48,8 @@
       var lbl = t === 'dark' ? 'Dark mode. Switch to light mode' : 'Light mode. Switch to dark mode';
       tb.setAttribute('aria-label', lbl); tb.title = lbl;
     }
-    if (D.manifest) { styleLayers(); drawCharts(); }
+    hotCache = {};
+    if (D.manifest) { styleLayers(); drawCharts(); if (S.page === 'explore') drawHotspots(); }
   }
 
   /* ---------- pages and intro ---------- */
@@ -184,17 +185,26 @@
     });
     drawHotspots();
   }
-  function drawHotspots() {
-    hotLayer.clearLayers();
-    if (S.view !== 'after' || !D.hotspots) return;
-    var dates = D.manifest.dates, cur = dates[S.sel], prev = S.sel > 0 ? dates[S.sel - 1] : '0000';
+  // One layer group per radar date, built once on first use, so moving the
+  // timeline or switching pages swaps groups instead of rebuilding thousands of markers.
+  var hotCache = {};
+  function hotGroup(i) {
+    if (hotCache[i]) return hotCache[i];
+    var dates = D.manifest.dates, cur = dates[i], prev = i > 0 ? dates[i - 1] : '0000';
+    var g = L.layerGroup(), ring = css('hotspot-ring'), fill = css('hotspot');
     D.hotspots.features.forEach(function (f) {
       var d = f.properties.acq_date; if (!(d > prev && d <= cur)) return;
       var c = f.geometry.coordinates;
-      L.circleMarker([c[1], c[0]], { radius: 4.5, weight: 1.5, color: css('hotspot-ring'), fillColor: css('hotspot'), fillOpacity: 1, interactive: true })
+      L.circleMarker([c[1], c[0]], { radius: 3, weight: 1, color: ring, fillColor: fill, fillOpacity: 0.85, interactive: true })
         .bindTooltip(f.properties.sensor + ' hotspot · ' + lab(d), { className: 'ptip', direction: 'top', offset: [0, -4] })
-        .addTo(hotLayer);
+        .addTo(g);
     });
+    return (hotCache[i] = g);
+  }
+  function drawHotspots() {
+    hotLayer.clearLayers();
+    if (S.view !== 'after' || !D.hotspots) return;
+    hotLayer.addLayer(hotGroup(S.sel));
   }
   function drawEvents() {
     eventLayer.clearLayers();
@@ -494,6 +504,9 @@
   /* ---------- boot ---------- */
   function boot() {
     setTheme(store('bs-theme') || 'dark');
+    if (window.katex) document.querySelectorAll('.tex[data-tex]').forEach(function (el) {
+      try { katex.render(el.getAttribute('data-tex'), el, { throwOnError: false, displayMode: false }); } catch (e) { /* keep the HTML fallback */ }
+    });
     var tb = document.querySelector('.theme-toggle');
     if (tb) tb.onclick = function () { setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); };
 
