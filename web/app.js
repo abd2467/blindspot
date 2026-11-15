@@ -111,8 +111,9 @@
     $('h-share').textContent = pct(c.no_hotspot_share);
     var bits = [];
     if (c.mc) bits.push('Likely range ' + pct(c.mc.p05) + ' to ' + pct(c.mc.p95));
-    var counted = ((D.patches && D.patches.features) || []).filter(function (f) { return inHeadline(f.properties); }).length;
-    bits.push((counted || c.n_patches) + ' patches over ' + D.manifest.dates.length + ' radar dates');
+    var feats = (D.patches && D.patches.features) || [];
+    var counted = feats.length ? feats.filter(function (f) { return inHeadline(f.properties); }).length : c.n_patches;
+    bits.push(counted + ' patches over ' + D.manifest.dates.length + ' radar dates');
     if (c.excluded_flags && c.excluded_flags.length) bits.push(c.excluded_flags.join(' and ') + ' patches left out');
     if (D.manifest.fixture) bits.push('demo data');
     $('h-sub').textContent = bits.join(' · ');
