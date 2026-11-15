@@ -1,0 +1,105 @@
+{
+ "total_change_km2": 121.691,
+ "no_hotspot_km2": 86.22,
+ "no_hotspot_share": 0.7085,
+ "excluded_flags": [
+  "water",
+  "edge"
+ ],
+ "excluded_km2": 86.854,
+ "no_hotspot_share_without_2026_08_17": 0.5871,
+ "n_patches": 1760,
+ "n_recorded": 385,
+ "n_none": 1375,
+ "n_insufficient": 0,
+ "mc": {
+  "p05": 0.6072,
+  "p50": 0.6759,
+  "p95": 0.7549,
+  "runs": 300
+ },
+ "params": {
+  "buffer_km": 1.0,
+  "window_slack_days": 0,
+  "mc_buffer_km": [
+   0.5,
+   2.0
+  ],
+  "mc_slack_days": [
+   0,
+   12
+  ],
+  "footprint_half_m": {
+   "VIIRS": 187.5,
+   "MODIS": 500.0
+  }
+ },
+ "by_date": [
+  {
+   "date": "2026-06-18",
+   "change_km2": 0.0,
+   "no_hotspot_km2": 0.0,
+   "n_hotspots": 6
+  },
+  {
+   "date": "2026-06-30",
+   "change_km2": 0.0,
+   "no_hotspot_km2": 0.0,
+   "n_hotspots": 4
+  },
+  {
+   "date": "2026-07-12",
+   "change_km2": 0.0,
+   "no_hotspot_km2": 0.0,
+   "n_hotspots": 8
+  },
+  {
+   "date": "2026-07-24",
+   "change_km2": 0.0,
+   "no_hotspot_km2": 0.0,
+   "n_hotspots": 79
+  },
+  {
+   "date": "2026-08-17",
+   "change_km2": 60.678,
+   "no_hotspot_km2": 50.4,
+   "n_hotspots": 1824
+  },
+  {
+   "date": "2026-08-29",
+   "change_km2": 8.734,
+   "no_hotspot_km2": 7.549,
+   "n_hotspots": 4433
+  },
+  {
+   "date": "2026-09-10",
+   "change_km2": 13.068,
+   "no_hotspot_km2": 12.712,
+   "n_hotspots": 3335
+  },
+  {
+   "date": "2026-09-22",
+   "change_km2": 15.275,
+   "no_hotspot_km2": 10.174,
+   "n_hotspots": 9422
+  },
+  {
+   "date": "2026-10-04",
+   "change_km2": 8.518,
+   "no_hotspot_km2": 2.47,
+   "n_hotspots": 5776
+  },
+  {
+   "date": "2026-10-16",
+   "change_km2": 15.419,
+   "no_hotspot_km2": 2.916,
+   "n_hotspots": 6678
+  },
+  {
+   "date": "2026-10-28",
+   "change_km2": 0.0,
+   "no_hotspot_km2": 0.0,
+   "n_hotspots": 7087
+  }
+ ]
+}

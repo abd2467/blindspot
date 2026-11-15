@@ -83,6 +83,23 @@ def match(patches, hs, buffer_km, slack_days, jitter=None, pairs=None):
     return n, nearest / 1000.0
 
 
+def _flag_set(f):
+    """Patch flags as a set, whether geopandas returns a list, an array or a JSON string."""
+    if isinstance(f, str):
+        return set(json.loads(f))
+    return set() if f is None else {str(x) for x in f}
+
+
+def _not_post_gap(patches):
+    """False for patches first seen on 17 Aug, the first pass after the missing early-August date."""
+    return (patches["first_change_date"] != "2026-08-17").to_numpy()
+
+
+def _share(area_km2, status, sel):
+    total = float(area_km2[sel].sum())
+    return round(float(area_km2[sel & (status == "none")].sum()) / total, 4) if total else None
+
+
 def run(runs: int = C.PARAMS["mc_runs"], seed: int = 0):
     patches, hs, covered = _load()
     P = C.PARAMS
@@ -113,7 +130,10 @@ def run(runs: int = C.PARAMS["mc_runs"], seed: int = 0):
         w.writeheader()
         w.writerows(rows)
 
-    eligible = status != "insufficient_data"
+    # Headline leaves out patches flagged water (river and wetland margins) or edge (swath edge).
+    flags = patches["flags"].map(_flag_set)
+    excluded = flags.map(lambda f: bool(f & {"water", "edge"})).to_numpy()
+    eligible = (status != "insufficient_data") & ~excluded
     total = float(area_km2[eligible].sum())
     none_km2 = float(area_km2[eligible & (status == "none")].sum())
     share = none_km2 / total if total else float("nan")
@@ -138,6 +158,7 @@ def run(runs: int = C.PARAMS["mc_runs"], seed: int = 0):
         sel = (patches["first_change_date"] == d).to_numpy()
         dd = date.fromisoformat(d)
         n_hs = int(((hs["day"] > prev.toordinal()) & (hs["day"] <= dd.toordinal())).sum())
+        sel = sel & eligible
         by_date.append({"date": d, "change_km2": round(float(area_km2[sel].sum()), 3),
                         "no_hotspot_km2": round(float(area_km2[sel & (status == "none")].sum()), 3),
                         "n_hotspots": n_hs})
@@ -146,6 +167,8 @@ def run(runs: int = C.PARAMS["mc_runs"], seed: int = 0):
     stats = {
         "total_change_km2": round(total, 3), "no_hotspot_km2": round(none_km2, 3),
         "no_hotspot_share": round(share, 4),
+        "excluded_flags": ["water", "edge"], "excluded_km2": round(float(area_km2[excluded].sum()), 3),
+        "no_hotspot_share_without_2026_08_17": _share(area_km2, status, eligible & _not_post_gap(patches)),
         "n_patches": int(len(patches)), "n_recorded": int((status == "recorded").sum()),
         "n_none": int((status == "none").sum()), "n_insufficient": int((status == "insufficient_data").sum()),
         "mc": {"p05": round(float(np.nanpercentile(shares, 5)), 4), "p50": round(float(np.nanpercentile(shares, 50)), 4),
