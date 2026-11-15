@@ -1025,7 +1025,7 @@ P1023,low,not_assessable,false,,
 P1024,medium,unreviewed,false,,
 P1025,medium,unreviewed,false,,
 P1026,low,not_assessable,false,,
-P1027,medium,unreviewed,false,,
+P1027,medium,other_disturbance,false,"Sentinel-2 L2A 21 Jun vs 19 Sep 2026: managed field block with straight edges; fully vegetated 21 Jun, bare brown strips and plot lines on 19 Sep; no burn scar in true colour or SWIR despite one hotspot within 1 km in window",https://browser.dataspace.copernicus.eu
 P1028,low,not_assessable,false,,
 P1029,medium,unreviewed,false,,
 P1030,medium,unreviewed,false,,
