@@ -2,7 +2,7 @@
 
 **Format decision (WS6 step 2):** slides, not video. Seven slides including the title, built in the BlindSpot Slides deck (link in `story/slides.md`). The same words are the deck's speaker notes, so a judge reading the deck alone and a judge hearing the pitch get the same story. Theme and wording rules: `story/THEME.md`.
 
-Numbers in **[brackets]** come from `web/data/stats.json` after the 19:00 integration run. Until then the deck shows demo values marked "DEMO". Never type them from memory.
+All numbers come from `web/data/stats.json` of the real integration run (15 Nov 2026) and are final in the deck. Never type them from memory.
 
 | # | Act | Slide | Say (about 20 seconds each) |
 |---|---|---|---|
@@ -16,7 +16,7 @@ Numbers in **[brackets]** come from `web/data/stats.json` after the 19:00 integr
 
 ## Before submitting
 
-1. Rebuild slide 5 from the real `web/data/stats.json` with `story/make_season_slide.py` (drop the `demo` flag), replace the DEMO values on slide 6, and swap the slide 7 map for a screenshot of the live site.
+1. Done: slide 5 rebuilt from the real stats, slide 6 has the real validation numbers, slide 7 shows the live map.
 2. Add team names on slide 1.
 3. Check every number against its source column in `docs/BRIEF.md` section 3 or `stats.json`.
 4. Export the deck to PDF as a backup, in case the judges' view needs a file.
