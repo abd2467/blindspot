@@ -1329,7 +1329,7 @@ P1327,medium,unreviewed,false,,
 P1328,medium,unreviewed,false,,
 P1329,medium,unreviewed,false,,
 P1330,medium,unreviewed,false,,
-P1331,low,not_assessable,false,,
+P1331,low,fire_supported,false,"Sentinel-2 L2A 21 Jun, 19 Sep and 14 Oct 2026: dry unburned ground cover over most of the outline on 19 Sep with an active fire front on the north-west arm and scars on the western arm; much of the outline dark maroon in SWIR by 14 Oct; first radar change (17 Aug) predates the visible fire and fits drying of a low-lying basin; no open water seen despite the water flag; six hotspots within 1 km in window",https://browser.dataspace.copernicus.eu
 P1332,medium,unreviewed,false,,
 P1333,medium,unreviewed,false,,
 P1334,medium,unreviewed,false,,
