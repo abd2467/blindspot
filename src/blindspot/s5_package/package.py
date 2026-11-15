@@ -130,11 +130,39 @@ def _patches():
     (C.WEB_DATA / "patches.geojson").write_text(json.dumps(gj))
 
 
+def _in_radar_coverage(features):
+    """Keep only hotspots over grid pixels with radar data (display only; the cross-check uses all)."""
+    stack = C.INTERIM / "stack.nc"
+    if not stack.exists() or not features:
+        return features
+    import numpy as np
+    import xarray as xr
+    from pyproj import Transformer
+    ds = xr.open_dataset(stack)
+    hv = ds["hv"].values
+    covered = np.any(np.isfinite(hv) & (hv > 0), axis=0)
+    xs, ys = ds["x"].values, ds["y"].values
+    ds.close()
+    to_grid = Transformer.from_crs("EPSG:4326", C.CRS, always_xy=True)
+    lon = np.array([f["geometry"]["coordinates"][0] for f in features])
+    lat = np.array([f["geometry"]["coordinates"][1] for f in features])
+    gx, gy = to_grid.transform(lon, lat)
+    res = abs(xs[1] - xs[0])
+    col = np.floor((gx - (xs[0] - res / 2)) / res).astype(int)
+    row = np.floor(((ys[0] + res / 2) - gy) / res).astype(int) if ys[0] > ys[-1] else np.floor((gy - (ys[0] - res / 2)) / res).astype(int)
+    inside = (col >= 0) & (col < len(xs)) & (row >= 0) & (row < len(ys))
+    keep = np.zeros(len(features), bool)
+    keep[inside] = covered[row[inside], col[inside]]
+    print(f"[S5] hotspots on the map: {keep.sum()} of {len(features)} inside radar coverage")
+    return [f for f, k in zip(features, keep) if k]
+
+
 def _hotspots():
     p = C.PROCESSED / "hotspots.geojson"
     if not p.exists():
         return _warn("hotspots.geojson")
     gj = json.loads(p.read_text())
+    gj["features"] = _in_radar_coverage(gj["features"])
     for ft in gj["features"]:
         ft["geometry"]["coordinates"] = [round(v, 5) for v in ft["geometry"]["coordinates"]]
         pr = ft["properties"]
