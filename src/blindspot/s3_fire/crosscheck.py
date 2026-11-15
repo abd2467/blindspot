@@ -83,6 +83,23 @@ def match(patches, hs, buffer_km, slack_days, jitter=None, pairs=None):
     return n, nearest / 1000.0
 
 
+def _pct(a, q):
+    """Rounded percentile, or None when every Monte Carlo share is NaN."""
+    a = np.asarray(a, dtype=float)
+    return round(float(np.nanpercentile(a, q)), 4) if np.isfinite(a).any() else None
+
+
+def _no_nan(x):
+    """Replace NaN floats with None, recursively, so the stats file is valid JSON."""
+    if isinstance(x, float) and x != x:
+        return None
+    if isinstance(x, dict):
+        return {k: _no_nan(v) for k, v in x.items()}
+    if isinstance(x, list):
+        return [_no_nan(v) for v in x]
+    return x
+
+
 def _flag_set(f):
     """Patch flags as a set, whether geopandas returns a list, an array or a JSON string."""
     if isinstance(f, str):
@@ -171,12 +188,12 @@ def run(runs: int = C.PARAMS["mc_runs"], seed: int = 0):
         "no_hotspot_share_without_2026_08_17": _share(area_km2, status, eligible & _not_post_gap(patches)),
         "n_patches": int(len(patches)), "n_recorded": int((status == "recorded").sum()),
         "n_none": int((status == "none").sum()), "n_insufficient": int((status == "insufficient_data").sum()),
-        "mc": {"p05": round(float(np.nanpercentile(shares, 5)), 4), "p50": round(float(np.nanpercentile(shares, 50)), 4),
-               "p95": round(float(np.nanpercentile(shares, 95)), 4), "runs": runs},
+        "mc": {"p05": _pct(shares, 5), "p50": _pct(shares, 50), "p95": _pct(shares, 95), "runs": runs},
         "params": {k: P[k] for k in ("buffer_km", "window_slack_days", "mc_buffer_km", "mc_slack_days", "footprint_half_m")},
         "by_date": by_date,
     }
-    (C.PROCESSED / "crosscheck_stats.json").write_text(json.dumps(stats, indent=1))
+    # NaN (no eligible patch) is not valid JSON: write null instead
+    (C.PROCESSED / "crosscheck_stats.json").write_text(json.dumps(_no_nan(stats), indent=1, allow_nan=False))
     print(f"[S3] {stats['n_patches']} patches, {total:.2f} km2 changed, "
           f"{share:.0%} with no hotspot (MC 5-95%: {stats['mc']['p05']:.0%} to {stats['mc']['p95']:.0%})")
 

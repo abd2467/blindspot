@@ -9,7 +9,7 @@
 <link rel="preload" href="vendor/fonts/space-grotesk-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="vendor/katex/katex.min.css">
-<link rel="stylesheet" href="style.css?v=20261115-2340">
+<link rel="stylesheet" href="style.css?v=20261115-2325b">
 </head>
 <body>
 
@@ -264,7 +264,7 @@
         <div class="eq-block">
           <div class="eq-t">Cross-check and headline</div>
           <div class="eq"><span class="tex" data-tex="\text{recorded}(P) \iff \exists\, h:\ d(h,P) \le b \ \text{and}\ t_{\text{prev}} - s \lt t_h \le t_{\text{change}}">recorded(<i>P</i>) &hArr; &exist; hotspot <i>h</i>: <i>d</i>(<i>h</i>, <i>P</i>) &le; <i>b</i> and <i>t</i><sub>prev</sub> &minus; <i>s</i> &lt; <i>t</i><sub><i>h</i></sub> &le; <i>t</i><sub>change</sub></span><span class="eq-n">(6)</span></div>
-          <div class="eq"><span class="tex" data-tex="\text{share} = \dfrac{\sum_{P\,\in\,\text{none}} A_P}{\sum_{P\,\in\,\text{eligible}} A_P}">share = &Sigma;<sub><i>P</i>: none</sub> <i>A</i><sub><i>P</i></sub> &frasl; &Sigma;<sub><i>P</i>: eligible</sub> <i>A</i><sub><i>P</i></sub></span><span class="eq-n">(7)</span></div>
+          <div class="eq"><span class="tex" data-tex="\text{share} = \dfrac{\sum_{P\,\in\,\text{eligible}\,\cap\,\text{none}} A_P}{\sum_{P\,\in\,\text{eligible}} A_P}">share = &Sigma;<sub><i>P</i>: eligible, none</sub> <i>A</i><sub><i>P</i></sub> &frasl; &Sigma;<sub><i>P</i>: eligible</sub> <i>A</i><sub><i>P</i></sub></span><span class="eq-n">(7)</span></div>
           <p class="eq-x">Central estimate: buffer <i>b</i> = 1 km, date slack <i>s</i> = 0. Eligible patches have full fire-data coverage and no water or swath-edge flag. Area-weighted, so one large patch counts more than a speck.</p>
         </div>
 
@@ -341,7 +341,7 @@
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.min.js"></script>
 <script src="vendor/katex/katex.min.js"></script>
-<script src="globe.js?v=20261115-2340"></script>
-<script src="app.js?v=20261115-2340"></script>
+<script src="globe.js?v=20261115-2325b"></script>
+<script src="app.js?v=20261115-2325b"></script>
 </body>
 </html>
