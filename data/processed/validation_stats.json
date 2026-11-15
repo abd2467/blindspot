@@ -4,17 +4,17 @@
   "n_patches": 1760
  },
  "sample": {
-  "n": 50,
+  "n": 48,
   "n_labelled": 48
  },
  "area_estimate": {
-  "km2": 361.551,
+  "km2": 220.776,
   "ci95_low": 0,
-  "ci95_high": 747.619,
+  "ci95_high": 496.048,
   "n_used": {
-   "change_hotspot": 13,
-   "change_no_hotspot": 17,
-   "no_change": 15
+   "change_hotspot": 14,
+   "change_no_hotspot": 18,
+   "no_change": 13
   },
   "target_labels": [
    "burn",

@@ -1,6 +1,7 @@
 """S4: validation, evidence review and the error-adjusted area estimate.
 
     python -m blindspot.s4_validate.validate sample   # draw the stratified reference sample to label
+    python -m blindspot.s4_validate.validate recount  # refresh stratum sizes, keep existing labels
     python -m blindspot.s4_validate.validate review   # create/refresh review.csv (confidence tiers)
     python -m blindspot.s4_validate.validate radd-prep <export.tif>  # raw Earth Engine export -> data/raw/radd_alerts.tif
     python -m blindspot.s4_validate.validate peat-prep <peat.tif>    # Global Peatland Map -> data/processed/peat_mask.tif
@@ -30,7 +31,7 @@ SAMPLE_PER_STRATUM = {"change_hotspot": 15, "change_no_hotspot": 20, "no_change"
 
 
 def _strata_raster():
-    """Per-pixel stratum (0,1,2; -1 = water) using patches and the cross-check."""
+    """Per-pixel stratum (0,1,2; -1 = water, no radar data or insufficient fire data)."""
     import geopandas as gpd
     import xarray as xr
     from rasterio.features import rasterize
@@ -49,8 +50,41 @@ def _strata_raster():
     strata = np.full(lab.shape, 2, "int8")      # no_change
     strata[lab == 1] = 0                        # change_hotspot
     strata[lab == 2] = 1                        # change_no_hotspot
-    strata[(lab == 3) | (st.water.values == 1)] = -1  # excluded
+    no_radar = ~np.isfinite(st.hv.values).all(axis=0)  # outside the swath: never assessed, so not "no change"
+    strata[(lab == 3) | (st.water.values == 1) | no_radar] = -1  # excluded
     return strata, ch.x.values, ch.y.values
+
+
+def _write_counts(strata):
+    """Write the number of pixels in each stratum (the weights for the area estimate)."""
+    counts = {name: int((strata == k).sum()) for k, name in enumerate(STRATA)}
+    (C.PROCESSED / "strata_pixel_counts.json").write_text(json.dumps(counts, indent=1))
+    return counts
+
+
+def recount():
+    """Refresh strata_pixel_counts.json and drop sample points that fall outside the strata.
+
+    Keeps the labels already entered; use after the strata definition or the inputs change slightly.
+    """
+    from pyproj import Transformer
+
+    strata, x, y = _strata_raster()
+    counts = _write_counts(strata)
+    path = C.PROCESSED / "reference_sample.csv"
+    rows = list(csv.DictReader(open(path)))
+    to_xy = Transformer.from_crs("EPSG:4326", C.CRS, always_xy=True)
+    keep = []
+    for r in rows:
+        px, py = to_xy.transform(float(r["lon"]), float(r["lat"]))
+        k = strata[int(np.abs(y - py).argmin()), int(np.abs(x - px).argmin())]
+        if k >= 0 and STRATA[k] == r["stratum"]:
+            keep.append(r)
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(keep)
+    print(f"[S4] strata counts {counts}; kept {len(keep)} of {len(rows)} sample points")
 
 
 def sample(seed: int = 42):
@@ -68,13 +102,12 @@ def sample(seed: int = 42):
             lon, lat = to_ll.transform(x[cc[i]], y[rr[i]])
             rows.append({"point_id": f"{POINT_PREFIX[name]}{j:03d}", "stratum": name,
                          "lon": round(lon, 6), "lat": round(lat, 6), "label": "", "labeller": "", "notes": ""})
-    counts = {name: int((strata == k).sum()) for k, name in enumerate(STRATA)}
+    _write_counts(strata)
     out = C.PROCESSED / "reference_sample.csv"
     with open(out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
-    (C.PROCESSED / "strata_pixel_counts.json").write_text(json.dumps(counts, indent=1))
     print(f"[S4] {len(rows)} points -> {out}. Label them by hand (burn/clearing/flood/no_change/unclear).")
 
 
@@ -279,4 +312,4 @@ if __name__ == "__main__":
     elif cmd == "peat-prep":
         peat_prepare(sys.argv[2])
     else:
-        {"sample": sample, "review": review, "radd": radd, "stats": stats}[cmd]()
+        {"sample": sample, "recount": recount, "review": review, "radd": radd, "stats": stats}[cmd]()

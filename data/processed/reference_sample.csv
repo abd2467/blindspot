@@ -6,7 +6,7 @@ CH003,change_hotspot,112.486326,-2.961876,unclear,WS4,"Sentinel-2 L2A, Copernicu
 CH004,change_hotspot,112.731543,-2.727125,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CH005,change_hotspot,112.732915,-2.924621,burn,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CH006,change_hotspot,112.814075,-2.713982,burn,WS4,"Sentinel-2 L2A, Copernicus Browser"
-CH007,change_hotspot,112.469011,-2.928256,,,label pending
+CH007,change_hotspot,112.469011,-2.928256,clearing,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CH008,change_hotspot,112.558422,-2.794106,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CH009,change_hotspot,112.464833,-3.03462,burn,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CH010,change_hotspot,112.823361,-2.78884,burn,WS4,"Sentinel-2 L2A, Copernicus Browser"
@@ -32,7 +32,7 @@ CN014,change_no_hotspot,112.510696,-3.021533,no_change,WS4,"Sentinel-2 L2A, Cope
 CN015,change_no_hotspot,112.732609,-3.072745,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CN016,change_no_hotspot,112.771436,-2.703737,unclear,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CN017,change_no_hotspot,112.538366,-2.724676,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
-CN018,change_no_hotspot,112.735505,-2.85354,,,label pending
+CN018,change_no_hotspot,112.735505,-2.85354,clearing,WS4,"Sentinel-2 L2A, Copernicus Browser"
 CN019,change_no_hotspot,112.521077,-2.707876,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC000,no_change,112.783578,-2.883849,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC001,no_change,112.550116,-3.033958,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
@@ -44,8 +44,6 @@ NC006,no_change,112.659249,-2.733739,no_change,WS4,"Sentinel-2 L2A, Copernicus B
 NC007,no_change,112.771238,-2.929444,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC008,no_change,112.739127,-2.747732,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC009,no_change,112.635725,-2.890041,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
-NC010,no_change,112.39001,-2.761759,burn,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC011,no_change,112.559087,-2.887437,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
-NC012,no_change,112.407838,-2.778017,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC013,no_change,112.682579,-2.823776,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
 NC014,no_change,112.585295,-3.098478,no_change,WS4,"Sentinel-2 L2A, Copernicus Browser"
