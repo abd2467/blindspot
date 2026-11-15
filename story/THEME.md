@@ -1,10 +1,12 @@
 # Story theme: "The quiet record"
 
-One idea carries the whole submission: **when the smoke is thickest, the fire record goes quiet. Radar keeps listening.** Every slide, line and picture serves that idea.
+One idea carries the whole submission: **heat sensors miss part of the fire season; radar keeps listening.** Every slide, line and picture serves that idea.
+
+**What the real data showed (updated after the integration run):** most change with no hotspot recorded came at the *start* of the fire season. From late August to September, 82% of radar-detected change had no hotspot within 1 km; in October, when Singapore's haze peaked, 23%. So we do not claim the record goes quiet when the haze is worst. We say the first burns of the season are the ones the record misses most.
 
 ## The spine (say it the same way every time)
 
-> In October 2026 Singapore's air hit PSI 192. The satellites that count Indonesia's fires see heat, and smoke and cloud hide it, so the fire record goes quiet exactly when the haze is worst. NISAR's L-band radar sees through smoke. BlindSpot uses it to map where the land changed, checks every change against the hotspot record, and shows how much of that change had no hotspot recorded, with an honest range.
+> In October 2026 Singapore's air hit PSI 192. The satellites that count Indonesia's fires see heat, and smoke, cloud and smouldering peat can hide it. NISAR's L-band radar sees through smoke. BlindSpot uses it to map where the land changed, checks every change against the hotspot record, and shows how much of that change had no hotspot recorded, with an honest range. On real data: 71% (range 61 to 75%) over the season, 59% without the 17 Aug pass, and most of it early in the fire season.
 
 Short form (pitch, title slide, submission description): **NISAR's radar audits the fire hotspot record under Indonesia's 2026 haze.**
 
@@ -44,7 +46,7 @@ The judges (Impact, Creativity, Validity, Relevance, Presentation, equal weight)
 
 ## Lines we reuse
 
-- "The fire record goes quiet when the smoke is worst."
+- "The first burns of the season are the ones the record misses most."
 - "Radar keeps listening."
 - "Not a change map: an audit of the fire record."
 - "A place to look, not proof of fire."
