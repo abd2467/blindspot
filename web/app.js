@@ -142,7 +142,7 @@
       };
     }
     // preload every overlay so playback does not flicker
-    Object.keys(D.manifest.overlays).forEach(function (k) { var i = new Image(); i.src = ovr(k); });
+    setTimeout(function () { Object.keys(D.manifest.overlays).forEach(function (k) { var i = new Image(); i.src = ovr(k); }); }, 2500);  // after first paint
     patchLayer = L.geoJSON(D.patches || { type: 'FeatureCollection', features: [] }, {
       style: patchStyle,
       onEachFeature: function (f, layer) {
@@ -195,9 +195,8 @@
     D.hotspots.features.forEach(function (f) {
       var d = f.properties.acq_date; if (!(d > prev && d <= cur)) return;
       var c = f.geometry.coordinates;
-      L.circleMarker([c[1], c[0]], { radius: 3, weight: 1, color: ring, fillColor: fill, fillOpacity: 0.85, interactive: true })
-        .bindTooltip(f.properties.sensor + ' hotspot · ' + lab(d), { className: 'ptip', direction: 'top', offset: [0, -4] })
-        .addTo(g);
+      // not interactive: hit-testing thousands of canvas markers on every mouse move made the map lag
+      L.circleMarker([c[1], c[0]], { radius: 3, weight: 1, color: ring, fillColor: fill, fillOpacity: 0.85, interactive: false }).addTo(g);
     });
     return (hotCache[i] = g);
   }

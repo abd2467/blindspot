@@ -60,7 +60,7 @@ def _overlays(manifest):
     src_tf = transform_from_coords(ds.x.values, ds.y.values)
     out_dir = C.WEB_DATA / "overlays"
     out_dir.mkdir(parents=True, exist_ok=True)
-    for old in out_dir.glob("hv_*.png"):
+    for old in list(out_dir.glob("hv_*.png")) + list(out_dir.glob("hv_*.webp")):
         old.unlink()
     lo, hi = HV_DB_RANGE
     manifest["overlays"] = {}
@@ -72,8 +72,8 @@ def _overlays(manifest):
         rgba = np.zeros((h, w, 4), "uint8")
         rgba[..., :3] = (np.nan_to_num(g) * 255).astype("uint8")[..., None]
         rgba[..., 3] = np.where(np.isfinite(dst), 255, 0)
-        name = f"overlays/hv_{d}.png"
-        Image.fromarray(rgba, "RGBA").save(C.WEB_DATA / name, optimize=True)
+        name = f"overlays/hv_{d}.webp"  # lossy WebP with alpha: ~6x smaller than PNG
+        Image.fromarray(rgba, "RGBA").save(C.WEB_DATA / name, "WEBP", quality=82, method=4)
         manifest["overlays"][d] = name
     manifest["bounds"] = _leaflet_bounds(dst_tf, (h, w))  # Leaflet order
     manifest["dates"] = [str(t)[:10] for t in ds.time.values]
@@ -105,6 +105,16 @@ def _rows(path):
     return {r["patch_id"]: r for r in csv.DictReader(open(path))} if path.exists() else {}
 
 
+def _display_geometry(geom, tol=0.00008):
+    """Simplify (~9 m, topology kept) and round to 5 decimals for a lighter map; display only."""
+    from shapely.geometry import shape, mapping
+    g = shape(geom).simplify(tol, preserve_topology=True)
+    def rnd(c):
+        return [rnd(x) for x in c] if isinstance(c, (list, tuple)) and c and isinstance(c[0], (list, tuple)) else [round(c[0], 5), round(c[1], 5)]
+    m = mapping(g)
+    return {"type": m["type"], "coordinates": rnd(m["coordinates"])}
+
+
 def _patches():
     p = C.PROCESSED / "patches.geojson"
     if not p.exists():
@@ -127,7 +137,8 @@ def _patches():
         pr["radd_agree"] = True if ra == "true" else False if ra == "false" else None
         # separators are whitespace, ";" or "|" (documented in CONTRACTS.md); commas can be part of a URL
         pr["evidence_urls"] = [u for u in re.split(r"[\s;|]+", r.get("evidence_urls") or "") if u.startswith("http")]
-    (C.WEB_DATA / "patches.geojson").write_text(json.dumps(gj))
+        ft["geometry"] = _display_geometry(ft["geometry"])
+    (C.WEB_DATA / "patches.geojson").write_text(json.dumps(gj, separators=(",", ":")))
 
 
 def _in_radar_coverage(features):
@@ -164,11 +175,10 @@ def _hotspots():
     gj = json.loads(p.read_text())
     gj["features"] = _in_radar_coverage(gj["features"])
     for ft in gj["features"]:
-        ft["geometry"]["coordinates"] = [round(v, 5) for v in ft["geometry"]["coordinates"]]
+        ft["geometry"]["coordinates"] = [round(v, 4) for v in ft["geometry"]["coordinates"]]
         pr = ft["properties"]
-        ft["properties"] = {"sensor": pr["sensor"], "acq_date": str(pr["acq_date"])[:10],
-                            "confidence": pr["confidence"], "frp": pr["frp"]}
-    (C.WEB_DATA / "hotspots.geojson").write_text(json.dumps(gj))
+        ft["properties"] = {"sensor": pr["sensor"], "acq_date": str(pr["acq_date"])[:10]}
+    (C.WEB_DATA / "hotspots.geojson").write_text(json.dumps(gj, separators=(",", ":")))
 
 
 def _csv_to_json(src, dst, value_col):
