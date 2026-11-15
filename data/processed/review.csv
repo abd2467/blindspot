@@ -1203,7 +1203,7 @@ P1201,medium,unreviewed,false,,
 P1202,low,not_assessable,false,,
 P1203,medium,unreviewed,false,,
 P1204,low,not_assessable,false,,
-P1205,medium,unreviewed,false,,
+P1205,medium,other_disturbance,false,"Sentinel-2 L2A 1 Jun vs 19 Sep 2026: open ground with small plots; thin vegetation on 1 Jun, even olive-brown and dry on 19 Sep; no burn scar in true colour or SWIR despite two hotspots within 1 km in window; gradual radar decline from June; likely seasonal drying",https://browser.dataspace.copernicus.eu
 P1206,medium,unreviewed,false,,
 P1207,medium,unreviewed,false,,
 P1208,medium,unreviewed,false,,
