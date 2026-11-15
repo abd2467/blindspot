@@ -5,9 +5,22 @@
  },
  "sample": {
   "n": 50,
-  "n_labelled": 0
+  "n_labelled": 48
  },
- "area_estimate": null,
+ "area_estimate": {
+  "km2": 361.551,
+  "ci95_low": 0,
+  "ci95_high": 747.619,
+  "n_used": {
+   "change_hotspot": 13,
+   "change_no_hotspot": 17,
+   "no_change": 15
+  },
+  "target_labels": [
+   "burn",
+   "clearing"
+  ]
+ },
  "synthetic": {
   "method": "omnibus",
   "injected_date": "2026-08-29",
