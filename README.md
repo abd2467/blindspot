@@ -10,7 +10,7 @@ NASA Space Apps Challenge 2026 · Singapore · Challenge: [Dancing with the SARs
 
 ## The problem
 
-When smoke is thickest, the MODIS and VIIRS fire satellites see least: smoke and cloud hide fires, and peat smoulders below their detection limit. So the hotspot record of what burned is least complete exactly when haze reaches Singapore (24-hr PSI 192 on 9 Oct 2026). NISAR's L-band radar observes through smoke and cloud every 12 days.
+The MODIS and VIIRS fire satellites that build Indonesia's hotspot record detect heat. Smoke, cloud and smouldering peat can hide fires from them, so the record can miss burning (Singapore's 24-hr PSI reached 192 on 9 Oct 2026). NISAR's L-band radar observes through smoke and cloud every 12 days.
 
 ## What Blindspot does
 
@@ -20,6 +20,15 @@ When smoke is thickest, the MODIS and VIIRS fire satellites see least: smoke and
 4. Shows it all in an interactive map: timeline, before/after, patch inspector, "why radar" panel and the Singapore haze timeline.
 
 Full brief: [`docs/BRIEF.md`](docs/BRIEF.md).
+
+## Results (real data, 15 Nov 2026)
+
+- **71% of radar-detected change had no fire hotspot recorded** (Monte Carlo range 61 to 75%), over 122 km² of change; water and swath-edge patches left out. Without 17 Aug, the first pass after a 24-day gap: 59%.
+- The gap is early in the season: late August to September, 82% of change had no hotspot recorded; October, 23%.
+- Synthetic test: fake burns of about 3 ha and up found in every trial at drops of 4 dB or more; false alarms on 0.006% of stable land.
+- Labelled sample (48 points): error-adjusted change area 221 km², 95% CI 0 to 496 km². 10 patches reviewed by hand: 3 fire supported, 6 other disturbance, 1 unresolved. RADD alerts overlap 0.2% of patches.
+
+Slides: [`story/BlindSpot_slides.pdf`](story/BlindSpot_slides.pdf) (7 slides). Submission text: [`story/SUBMISSION.md`](story/SUBMISSION.md).
 
 ## Quick start (5 minutes, no logins)
 
