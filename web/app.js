@@ -456,8 +456,14 @@
 
   /* ---------- editorial content from data ---------- */
   function renderPsi() {
-    // Without the PSI series, keep the cited figure in the page (NEA, 9 Oct 2026) instead of a dash.
-    if (!D.psi || !D.psi.length) return;
+    // Without the PSI series, show the cited NEA figure (192 on 9 Oct 2026) and hide the empty chart.
+    if (!D.psi || !D.psi.length) {
+      $('psi-peak-label').textContent = '24-hr PSI, 9 Oct 2026 (NEA)';
+      $('psi-marker').style.left = (192 / 400 * 100) + '%';
+      var box = document.querySelector('.chart-psi');
+      if (box) { box.hidden = true; box.style.display = 'none'; var c = box.nextElementSibling; if (c && c.classList.contains('cite')) c.textContent = 'Key dates from Singapore\'s National Environment Agency:'; }
+      return;
+    }
     var peak = D.psi.reduce(function (m, r) { return r.value > m.value ? r : m; }, D.psi[0]);
     document.querySelectorAll('[data-psi-peak]').forEach(function (el) { el.textContent = Math.round(peak.value); });
     document.querySelectorAll('[data-psi-peak-label]').forEach(function (el) { el.textContent = "Singapore's peak 24-hr PSI this season, " + labY(peak.date); });
