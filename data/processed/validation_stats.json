@@ -1,0 +1,163 @@
+{
+ "radd_agreement": {
+  "share": 0.002,
+  "n_patches": 1640
+ },
+ "sample": {
+  "n": 50,
+  "n_labelled": 0
+ },
+ "area_estimate": null,
+ "synthetic": {
+  "method": "omnibus",
+  "injected_date": "2026-08-29",
+  "curve": [
+   {
+    "drop_db": 2,
+    "size_ha": 1,
+    "trials": 3,
+    "detection_rate": 0.0
+   },
+   {
+    "drop_db": 2,
+    "size_ha": 2,
+    "trials": 3,
+    "detection_rate": 0.333
+   },
+   {
+    "drop_db": 2,
+    "size_ha": 5,
+    "trials": 3,
+    "detection_rate": 0.333
+   },
+   {
+    "drop_db": 2,
+    "size_ha": 10,
+    "trials": 3,
+    "detection_rate": 0.0
+   },
+   {
+    "drop_db": 2,
+    "size_ha": 20,
+    "trials": 3,
+    "detection_rate": 0.667
+   },
+   {
+    "drop_db": 2,
+    "size_ha": 50,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 3,
+    "size_ha": 1,
+    "trials": 3,
+    "detection_rate": 0.333
+   },
+   {
+    "drop_db": 3,
+    "size_ha": 2,
+    "trials": 3,
+    "detection_rate": 0.667
+   },
+   {
+    "drop_db": 3,
+    "size_ha": 5,
+    "trials": 3,
+    "detection_rate": 0.667
+   },
+   {
+    "drop_db": 3,
+    "size_ha": 10,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 3,
+    "size_ha": 20,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 3,
+    "size_ha": 50,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 4,
+    "size_ha": 1,
+    "trials": 3,
+    "detection_rate": 0.333
+   },
+   {
+    "drop_db": 4,
+    "size_ha": 2,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 4,
+    "size_ha": 5,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 4,
+    "size_ha": 10,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 4,
+    "size_ha": 20,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 4,
+    "size_ha": 50,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 6,
+    "size_ha": 1,
+    "trials": 3,
+    "detection_rate": 0.667
+   },
+   {
+    "drop_db": 6,
+    "size_ha": 2,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 6,
+    "size_ha": 5,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 6,
+    "size_ha": 10,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 6,
+    "size_ha": 20,
+    "trials": 3,
+    "detection_rate": 1.0
+   },
+   {
+    "drop_db": 6,
+    "size_ha": 50,
+    "trials": 3,
+    "detection_rate": 1.0
+   }
+  ],
+  "false_alarm_rate": 6e-05,
+  "note": "Real stack. Burns injected into unchanged valid land; original speckle retained. Nominal square sizes rounded UP to whole pixels: 1 ha -> 1.44 ha, 2 ha -> 3.24 ha, 5 ha -> 5.76 ha, 10 ha -> 12.96 ha, 20 ha -> 23.04 ha, 50 ha -> 51.84 ha. Detection includes the configured minimum patch area. False-alarm rate is conditional on baseline-unchanged pixels, not an independent estimate of the nominal test alpha."
+ }
+}
