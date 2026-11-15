@@ -1141,7 +1141,7 @@ P1139,medium,unreviewed,false,,
 P1140,low,not_assessable,false,,
 P1141,medium,unreviewed,false,,
 P1142,medium,unreviewed,false,,
-P1143,medium,unreviewed,false,,
+P1143,medium,unresolved,false,"Sentinel-2 L2A 21 Jun, 13 Jul (hazy) and 19 Sep 2026: small open patch already brown and thinly vegetated on 21 Jun, similar on 19 Sep; no clear visible change and no burn scar in SWIR; patch only about 250 m across; no hotspot in window",https://browser.dataspace.copernicus.eu
 P1144,medium,unreviewed,false,,
 P1145,low,not_assessable,false,,
 P1146,low,not_assessable,false,,
