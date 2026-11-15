@@ -2,6 +2,8 @@
 
 **What the hotspots missed.** NISAR L-band radar sees land change under the haze of Indonesia's 2026 peatland fire season and audits the satellite hotspot record against it.
 
+**Live app: https://blindspotsg.earth**
+
 NASA Space Apps Challenge 2026 · Singapore · Challenge: [Dancing with the SARs](https://www.spaceappschallenge.org/2026/challenges/dancing-with-the-sars/?tab=details)
 
 > Research prototype using provisional NISAR data. Shows where land changed, not who caused it. Not for legal or enforcement use without verification on the ground.

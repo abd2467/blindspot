@@ -20,7 +20,7 @@ RAW = DATA / "raw"            # downloads, never committed
 INTERIM = DATA / "interim"    # stack.nc, change.nc, never committed
 PROCESSED = DATA / "processed"  # small tables and GeoJSON passed between workstreams
 FIXTURES = REPO_ROOT / "data" / "fixtures"  # synthetic data tree made by scripts/make_fixtures.py
-WEB_DATA = REPO_ROOT / "web" / "data"  # what the web app reads (committed, kept small)
+WEB_DATA = REPO_ROOT / os.environ.get("BLINDSPOT_WEB_DATA", "web/data")  # what the web app reads (committed, kept small)
 
 # ---------------------------------------------------------------------------
 # Study area and grid

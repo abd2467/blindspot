@@ -33,7 +33,7 @@ Deadline: **Sun 15 Nov 23:59**. We submit at **23:00**.
 | 09:00 to 14:00 | WS2 runs on real stack; WS3 cross-check; WS4 sample and labelling; WS5 wires real data; WS6 drafts slides | |
 | **14:00** | **Gate 2:** real headline number with a range in `crosscheck_stats.json` | Fallback: patch counts and area without Monte Carlo |
 | 14:00 to 19:00 | Synthetic test, Monte Carlo, Olofsson CI, review of 10+ patches, app polish | |
-| **19:00** | **Integration freeze:** last data PRs merged; lead runs `make real` and deploys | |
+| **19:00** | **Integration freeze:** last data PRs merged; the site at https://blindspotsg.earth rebuilds from them automatically; lead runs `make real` locally to double-check | |
 | 19:00 to 21:00 | Video or slides recorded on the deployed app; README and References final | |
 | **21:00** | **Feature freeze** | |
 | 21:00 to 23:00 | Submit on the Project tab; check it says submitted. Polish only | **23:00 submitted** |

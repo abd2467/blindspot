@@ -6,7 +6,13 @@
 **Goal:** a fast, clear app that tells the story in under a minute and lets a judge click any patch to see the evidence.
 **You own:** `web/` (except `web/data/`, which only S5 writes). **You produce:** the deployed site.
 
-The app already works on fixture data: `web/index.html`, `web/app.js`, `web/style.css`. Plain HTML + Leaflet + Chart.js from CDNs, no build step, so it runs anywhere and deploys to GitHub Pages as-is.
+The app already works on fixture data: `web/index.html`, `web/app.js` (data, map, charts, pages), `web/globe.js` (start-screen globe), `web/style.css`. Plain HTML + Leaflet + Chart.js, all vendored in `web/vendor/` with the fonts, so it needs no CDN and no build step. Design and tokens follow the BlindSpot design system.
+
+**Live site:** https://blindspotsg.earth (GitHub Pages, custom domain). Every push to `main` that touches `web/`, `data/processed/` or the packager redeploys it. When real outputs are in `data/processed/`, the deploy job pulls `stack.nc` and `peat_mask.tif` from release `data-v1`, runs the S5 packager and publishes the result; until then it publishes the committed demo data.
+
+**Partial data is normal.** The app reads `manifest.json` `inputs` and shows each part as soon as it exists: patches before the cross-check (neutral colour, "not checked yet"), the radar image only once `stack.nc` is in the release, and so on.
+
+**Shareable views for the video:** `https://blindspotsg.earth/?patch=P0016&date=2026-09-22#explore` opens straight on a patch and date (skipping the intro).
 
 ## Steps
 

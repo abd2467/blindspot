@@ -1,8 +1,12 @@
 name: pages
+# Deploys web/ to GitHub Pages (https://blindspotsg.earth).
+# When real workstream outputs are in data/processed/, the S5 packager rebuilds web/data/ from them
+# first, pulling the large files (stack.nc, peat_mask.tif) from the data-v1 release.
+# With no real outputs yet, the committed web/data/ (demo data) is deployed as is.
 on:
   push:
     branches: [main]
-    paths: ["web/**"]
+    paths: ["web/**", "data/processed/**", "src/blindspot/s5_package/**", "src/blindspot/config.py", ".github/workflows/pages.yml"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +23,44 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Real outputs present?
+        id: real
+        run: |
+          found=""
+          for f in patches.geojson crosscheck_stats.json crosscheck.csv hotspots.geojson review.csv \
+                   validation_stats.json psi_daily.csv rain_daily.csv eonet_events.geojson; do
+            [ -f "data/processed/$f" ] && found="$found $f"
+          done
+          if [ -n "$found" ]; then
+            echo "yes=true" >> "$GITHUB_OUTPUT"; echo "Real outputs found:$found. Rebuilding web/data"
+          else
+            echo "yes=false" >> "$GITHUB_OUTPUT"; echo "No real outputs yet: deploying committed demo data"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.real.outputs.yes == 'true'
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Fetch large files from release data-v1 (skipped if not uploaded yet)
+        if: steps.real.outputs.yes == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/interim
+          gh release download data-v1 -p stack.nc -D data/interim --clobber || echo "stack.nc not in release yet"
+          gh release download data-v1 -p peat_mask.tif -D data/processed --clobber || echo "peat_mask.tif not in release yet"
+
+      - name: Package real outputs into web/data
+        if: steps.real.outputs.yes == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          pip install -r requirements.txt
+          python -m blindspot.s5_package.package
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
