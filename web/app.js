@@ -110,7 +110,9 @@
     $('h-share').textContent = pct(c.no_hotspot_share);
     var bits = [];
     if (c.mc) bits.push('Likely range ' + pct(c.mc.p05) + ' to ' + pct(c.mc.p95));
-    bits.push(c.n_patches + ' patches over ' + D.manifest.dates.length + ' radar dates');
+    var counted = ((D.patches && D.patches.features) || []).filter(function (f) { return inHeadline(f.properties); }).length;
+    bits.push((counted || c.n_patches) + ' patches over ' + D.manifest.dates.length + ' radar dates');
+    if (c.excluded_flags && c.excluded_flags.length) bits.push(c.excluded_flags.join(' and ') + ' patches left out');
     if (D.manifest.fixture) bits.push('demo data');
     $('h-sub').textContent = bits.join(' · ');
     $('f-total').textContent = c.total_change_km2.toFixed(2);
@@ -283,9 +285,22 @@
     drawPatchChart();
     if (S.page === 'why') drawWhyChart();
   }
+  // Patches the headline counts: cross-checked, and without a flag the headline leaves out.
+  function inHeadline(p) {
+    var skip = (D.stats && D.stats.crosscheck && D.stats.crosscheck.excluded_flags) || [];
+    if (p.hotspot_status !== 'none' && p.hotspot_status !== 'recorded') return false;
+    return !(p.flags || []).some(function (x) { return skip.indexOf(x) >= 0; });
+  }
+  // First radar date after a gap longer than one 12-day cycle (change there may span the gap).
+  function postGapDate() {
+    var d = D.manifest.dates || [];
+    for (var i = 1; i < d.length; i++) if (days(d[i - 1], d[i]) > 13) return d[i];
+    return null;
+  }
   function defaultPatch() {
-    var fs = (D.patches && D.patches.features) || [];
-    var none = fs.filter(function (f) { return f.properties.hotspot_status === 'none'; });
+    var fs = (D.patches && D.patches.features) || [], gap = postGapDate();
+    var none = fs.filter(function (f) { var p = f.properties; return p.hotspot_status === 'none' && inHeadline(p) && p.first_change_date !== gap; });
+    if (!none.length) none = fs.filter(function (f) { return f.properties.hotspot_status === 'none'; });
     var pool = none.length ? none : fs;
     pool.sort(function (a, b) { return b.properties.area_ha - a.properties.area_ha; });
     return pool.length ? pool[0].properties.patch_id : null;
