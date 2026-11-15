@@ -43,7 +43,11 @@
   function setTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     store('bs-theme', t);
-    document.querySelectorAll('[data-theme-set]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-set') === t)); });
+    var tb = document.querySelector('.theme-toggle');
+    if (tb) {
+      var lbl = t === 'dark' ? 'Dark mode. Switch to light mode' : 'Light mode. Switch to dark mode';
+      tb.setAttribute('aria-label', lbl); tb.title = lbl;
+    }
     if (D.manifest) { styleLayers(); drawCharts(); }
   }
 
@@ -466,7 +470,8 @@
   /* ---------- boot ---------- */
   function boot() {
     setTheme(store('bs-theme') || 'dark');
-    document.querySelectorAll('[data-theme-set]').forEach(function (b) { b.onclick = function () { setTheme(b.getAttribute('data-theme-set')); }; });
+    var tb = document.querySelector('.theme-toggle');
+    if (tb) tb.onclick = function () { setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); };
 
     intro = window.BlindSpotIntro && window.BlindSpotIntro.init({
       root: $('intro'), stars: $('stars'), globe: $('globe'), drag: $('spin'),
