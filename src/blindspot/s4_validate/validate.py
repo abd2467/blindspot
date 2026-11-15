@@ -1,7 +1,11 @@
 """S4: validation, evidence review and the error-adjusted area estimate.
 
     python -m blindspot.s4_validate.validate sample   # draw the stratified reference sample to label
+    python -m blindspot.s4_validate.validate recount  # refresh stratum sizes, keep existing labels
     python -m blindspot.s4_validate.validate review   # create/refresh review.csv (confidence tiers)
+    python -m blindspot.s4_validate.validate radd-prep <export.tif>  # raw Earth Engine export -> data/raw/radd_alerts.tif
+    python -m blindspot.s4_validate.validate peat-prep <peat.tif>    # Global Peatland Map -> data/processed/peat_mask.tif
+    python -m blindspot.s4_validate.validate rain-prep <giovanni.csv> # Giovanni area-average CSV -> data/processed/rain_daily.csv
     python -m blindspot.s4_validate.validate radd     # agreement with RADD (needs data/raw/radd_alerts.tif)
     python -m blindspot.s4_validate.validate stats    # Olofsson area + CI, write validation_stats.json
 
@@ -22,11 +26,12 @@ from ..grid import pixel_area_ha
 
 STRATA = ("change_hotspot", "change_no_hotspot", "no_change")
 LABELS = ("burn", "clearing", "flood", "no_change", "unclear")
+POINT_PREFIX = {"change_hotspot": "CH", "change_no_hotspot": "CN", "no_change": "NC"}  # unique per stratum
 SAMPLE_PER_STRATUM = {"change_hotspot": 15, "change_no_hotspot": 20, "no_change": 15}
 
 
 def _strata_raster():
-    """Per-pixel stratum (0,1,2; -1 = water) using patches and the cross-check."""
+    """Per-pixel stratum (0,1,2; -1 = water, no radar data or insufficient fire data)."""
     import geopandas as gpd
     import xarray as xr
     from rasterio.features import rasterize
@@ -45,8 +50,41 @@ def _strata_raster():
     strata = np.full(lab.shape, 2, "int8")      # no_change
     strata[lab == 1] = 0                        # change_hotspot
     strata[lab == 2] = 1                        # change_no_hotspot
-    strata[(lab == 3) | (st.water.values == 1)] = -1  # excluded
+    no_radar = ~np.isfinite(st.hv.values).all(axis=0)  # outside the swath: never assessed, so not "no change"
+    strata[(lab == 3) | (st.water.values == 1) | no_radar] = -1  # excluded
     return strata, ch.x.values, ch.y.values
+
+
+def _write_counts(strata):
+    """Write the number of pixels in each stratum (the weights for the area estimate)."""
+    counts = {name: int((strata == k).sum()) for k, name in enumerate(STRATA)}
+    (C.PROCESSED / "strata_pixel_counts.json").write_text(json.dumps(counts, indent=1))
+    return counts
+
+
+def recount():
+    """Refresh strata_pixel_counts.json and drop sample points that fall outside the strata.
+
+    Keeps the labels already entered; use after the strata definition or the inputs change slightly.
+    """
+    from pyproj import Transformer
+
+    strata, x, y = _strata_raster()
+    counts = _write_counts(strata)
+    path = C.PROCESSED / "reference_sample.csv"
+    rows = list(csv.DictReader(open(path)))
+    to_xy = Transformer.from_crs("EPSG:4326", C.CRS, always_xy=True)
+    keep = []
+    for r in rows:
+        px, py = to_xy.transform(float(r["lon"]), float(r["lat"]))
+        k = strata[int(np.abs(y - py).argmin()), int(np.abs(x - px).argmin())]
+        if k >= 0 and STRATA[k] == r["stratum"]:
+            keep.append(r)
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(keep)
+    print(f"[S4] strata counts {counts}; kept {len(keep)} of {len(rows)} sample points")
 
 
 def sample(seed: int = 42):
@@ -62,15 +100,14 @@ def sample(seed: int = 42):
         pick = rng.choice(rr.size, n, replace=False) if n else []
         for j, i in enumerate(pick):
             lon, lat = to_ll.transform(x[cc[i]], y[rr[i]])
-            rows.append({"point_id": f"{name[:2].upper()}{j:03d}", "stratum": name,
+            rows.append({"point_id": f"{POINT_PREFIX[name]}{j:03d}", "stratum": name,
                          "lon": round(lon, 6), "lat": round(lat, 6), "label": "", "labeller": "", "notes": ""})
-    counts = {name: int((strata == k).sum()) for k, name in enumerate(STRATA)}
+    _write_counts(strata)
     out = C.PROCESSED / "reference_sample.csv"
     with open(out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
-    (C.PROCESSED / "strata_pixel_counts.json").write_text(json.dumps(counts, indent=1))
     print(f"[S4] {len(rows)} points -> {out}. Label them by hand (burn/clearing/flood/no_change/unclear).")
 
 
@@ -130,6 +167,90 @@ def review():
     print(f"[S4] review.csv: {len(rows)} patches. Edit 'interpretation' for the patches you review.")
 
 
+def yydoy_to_days(a):
+    """Convert RADD 'Date' values (YYDOY, e.g. 26245) to days since 2014-12-31; 0 stays 0 (no alert)."""
+    from datetime import date
+
+    a = np.asarray(a, "int64")
+    epoch = date(2014, 12, 31).toordinal()
+    out = np.zeros(a.shape, "int32")
+    for yy in np.unique(a[a > 0] // 1000):
+        m = (a // 1000 == yy) & (a > 0)
+        out[m] = date(2000 + int(yy), 1, 1).toordinal() - epoch + a[m] % 1000 - 1
+    return out
+
+
+def radd_prepare(src_path):
+    """Put a raw Earth Engine RADD export (YYDOY dates, any 60 m window) on the analysis grid.
+
+    Writes data/raw/radd_alerts.tif with dates as days since 2014-12-31, which `radd` expects.
+    Grid cells outside the export are 0 (no alert).
+    """
+    import rasterio
+    from rasterio.warp import Resampling, reproject
+
+    from ..grid import coords, transform_from_coords
+
+    x, y = coords()
+    tf = transform_from_coords(x, y)
+    raw = np.zeros(C.GRID_SHAPE, "int32")
+    with rasterio.open(src_path) as s:
+        reproject(rasterio.band(s, 1), raw, dst_transform=tf, dst_crs=C.CRS,
+                  src_nodata=0, dst_nodata=0, resampling=Resampling.nearest)
+    days = yydoy_to_days(raw)
+    C.RAW.mkdir(parents=True, exist_ok=True)
+    out = C.RAW / "radd_alerts.tif"
+    with rasterio.open(out, "w", driver="GTiff", height=days.shape[0], width=days.shape[1], count=1,
+                       dtype="int32", crs=C.CRS, transform=tf, nodata=0, compress="deflate") as o:
+        o.write(days, 1)
+    print(f"[S4] {int((days > 0).sum())} alert pixels -> {out}")
+
+
+def peat_prepare(src_path):
+    """Reproject the Global Peatland Map 2.0 GeoTIFF (WGS 84, about 1 km) to the analysis grid.
+
+    Writes data/processed/peat_mask.tif: 1 = peat-dominated, 2 = peat in soil mosaic, 0 = other.
+    """
+    import rasterio
+    from rasterio.warp import Resampling, reproject
+
+    from ..grid import coords, transform_from_coords
+
+    x, y = coords()
+    tf = transform_from_coords(x, y)
+    dst = np.zeros(C.GRID_SHAPE, "uint8")
+    with rasterio.open(src_path) as s:
+        reproject(rasterio.band(s, 1), dst, dst_transform=tf, dst_crs=C.CRS, dst_nodata=0,
+                  resampling=Resampling.nearest)
+    dst[~np.isin(dst, (1, 2))] = 0
+    out = C.PROCESSED / "peat_mask.tif"
+    with rasterio.open(out, "w", driver="GTiff", height=dst.shape[0], width=dst.shape[1], count=1,
+                       dtype="uint8", crs=C.CRS, transform=tf, compress="deflate") as o:
+        o.write(dst, 1)
+    share = {int(v): round(float((dst == v).mean()), 3) for v in (0, 1, 2)}
+    print(f"[S4] peat mask -> {out}; share of grid by class: {share}")
+
+
+def rain_prepare(src_path):
+    """Convert a Giovanni area-averaged time series CSV (GPM_3IMERGDL, mm/day) to rain_daily.csv.
+
+    Skips the metadata header and fill values; writes columns date, precip_mm.
+    """
+    rows = []
+    for line in open(src_path):
+        parts = [p.strip() for p in line.split(",")]
+        if len(parts) == 2 and len(parts[0]) >= 10 and parts[0][:4].isdigit() and parts[0][4] == "-":
+            v = float(parts[1])
+            if v > -9000:
+                rows.append({"date": parts[0][:10], "precip_mm": round(v, 2)})
+    out = C.PROCESSED / "rain_daily.csv"
+    with open(out, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["date", "precip_mm"])
+        w.writeheader()
+        w.writerows(rows)
+    print(f"[S4] {len(rows)} days ({rows[0]['date']} to {rows[-1]['date']}) -> {out}")
+
+
 def radd():
     """Share of each patch covered by a RADD alert dated inside its window (data/raw/radd_alerts.tif).
 
@@ -184,4 +305,11 @@ def stats():
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "stats"
-    {"sample": sample, "review": review, "radd": radd, "stats": stats}[cmd]()
+    if cmd == "radd-prep":
+        radd_prepare(sys.argv[2])
+    elif cmd == "rain-prep":
+        rain_prepare(sys.argv[2])
+    elif cmd == "peat-prep":
+        peat_prepare(sys.argv[2])
+    else:
+        {"sample": sample, "recount": recount, "review": review, "radd": radd, "stats": stats}[cmd]()
