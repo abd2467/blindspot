@@ -3,6 +3,7 @@
     python -m blindspot.s4_validate.validate sample   # draw the stratified reference sample to label
     python -m blindspot.s4_validate.validate review   # create/refresh review.csv (confidence tiers)
     python -m blindspot.s4_validate.validate radd-prep <export.tif>  # raw Earth Engine export -> data/raw/radd_alerts.tif
+    python -m blindspot.s4_validate.validate peat-prep <peat.tif>    # Global Peatland Map -> data/processed/peat_mask.tif
     python -m blindspot.s4_validate.validate radd     # agreement with RADD (needs data/raw/radd_alerts.tif)
     python -m blindspot.s4_validate.validate stats    # Olofsson area + CI, write validation_stats.json
 
@@ -170,6 +171,31 @@ def radd_prepare(src_path):
     print(f"[S4] {int((days > 0).sum())} alert pixels -> {out}")
 
 
+def peat_prepare(src_path):
+    """Reproject the Global Peatland Map 2.0 GeoTIFF (WGS 84, about 1 km) to the analysis grid.
+
+    Writes data/processed/peat_mask.tif: 1 = peat-dominated, 2 = peat in soil mosaic, 0 = other.
+    """
+    import rasterio
+    from rasterio.warp import Resampling, reproject
+
+    from ..grid import coords, transform_from_coords
+
+    x, y = coords()
+    tf = transform_from_coords(x, y)
+    dst = np.zeros(C.GRID_SHAPE, "uint8")
+    with rasterio.open(src_path) as s:
+        reproject(rasterio.band(s, 1), dst, dst_transform=tf, dst_crs=C.CRS, dst_nodata=0,
+                  resampling=Resampling.nearest)
+    dst[~np.isin(dst, (1, 2))] = 0
+    out = C.PROCESSED / "peat_mask.tif"
+    with rasterio.open(out, "w", driver="GTiff", height=dst.shape[0], width=dst.shape[1], count=1,
+                       dtype="uint8", crs=C.CRS, transform=tf, compress="deflate") as o:
+        o.write(dst, 1)
+    share = {int(v): round(float((dst == v).mean()), 3) for v in (0, 1, 2)}
+    print(f"[S4] peat mask -> {out}; share of grid by class: {share}")
+
+
 def radd():
     """Share of each patch covered by a RADD alert dated inside its window (data/raw/radd_alerts.tif).
 
@@ -226,5 +252,7 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "stats"
     if cmd == "radd-prep":
         radd_prepare(sys.argv[2])
+    elif cmd == "peat-prep":
+        peat_prepare(sys.argv[2])
     else:
         {"sample": sample, "review": review, "radd": radd, "stats": stats}[cmd]()

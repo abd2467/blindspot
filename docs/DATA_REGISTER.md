@@ -12,9 +12,9 @@ Every external dataset, API, image and library we use. This feeds the Space Apps
 | GPM IMERG Late daily (`GPM_3IMERGDL`) | NASA GES DISC | Rainfall | WS4 | NASA open data policy | https://disc.gsfc.nasa.gov | |
 | EONET wildfire events | NASA | Story markers | WS6 | NASA open data policy | https://eonet.gsfc.nasa.gov/api/v3/events | |
 | GIBS corrected reflectance | NASA | "Why radar" imagery | WS5 | NASA open data policy | https://gibs.earthdata.nasa.gov | live |
-| RADD forest disturbance alerts | Wageningen University & Research | Validation | WS4 | to check on the RADD page | https://www.wur.nl/en/research/products-services/radd-forest-disturbance-alert | |
+| RADD forest disturbance alerts | Wageningen University & Research | Validation | WS4 | to check on the RADD page | https://www.wur.nl/en/research/products-services/radd-forest-disturbance-alert | 2026-11-15 |
 | HLS / Sentinel-2 | NASA / ESA Copernicus | Optical spot-checks | WS4 | open (Copernicus terms) | https://www.earthdata.nasa.gov/data/projects/hls | |
-| Global Peatland Map 2.0 | Greifswald Mire Centre / UNEP | Peat context | WS4 | to check | https://gee-community-catalog.org/projects/peatland/ | |
+| Global Peatland Map 2.0 (`GPM2022_GMC.zip`, 1 km, 2 classes) | Greifswald Mire Centre / UNEP | Peat context | WS4 | CC BY-NC-SA 4.0 (licence file in the download; derived `peat_mask.tif` carries the same terms) | https://gee-community-catalog.org/projects/peatland/ | 2026-11-15 |
 | Historical 24-hr PSI | NEA via data.gov.sg | Singapore timeline | WS6 | Singapore Open Data Licence | https://data.gov.sg/datasets/d_b4cf557f8750260d229c49fd768e11ed/view | |
 | OpenStreetMap tiles | OpenStreetMap contributors | Base map | WS5 | ODbL, attribution required | https://www.openstreetmap.org/copyright | live |
 | Leaflet, Chart.js | open source | Web app | WS5 | BSD-2 / MIT | https://leafletjs.com, https://www.chartjs.org | |
