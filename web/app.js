@@ -93,7 +93,7 @@
   function fitMap() {
     var b = D.manifest.bounds;
     map.fitBounds(b, { padding: [24, 24], animate: false });
-    map.setMinZoom(map.getZoom() - 1);
+    map.setMinZoom(map.getZoom() - 2);
   }
 
   /* ---------- explore: headline ---------- */
@@ -128,7 +128,14 @@
     var b = D.manifest.bounds;
     map = L.map('map', { preferCanvas: true, zoomControl: false, attributionControl: false, zoomSnap: 0.25, zoomDelta: 0.5, wheelPxPerZoomLevel: 120, maxBoundsViscosity: 0.8 });
     map.setView(L.latLngBounds(b).getCenter(), 12, { animate: false });   // real fit happens once the map is visible
-    map.setMaxBounds(L.latLngBounds(b).pad(0.6));
+    map.setMaxBounds(L.latLngBounds(b).pad(1.5));
+    // Context basemap under the radar: NASA Blue Marble (cloud-free) plus GIBS reference lines,
+    // so hotspots outside the radar swath still land on the landscape.
+    var GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/';
+    L.tileLayer(GIBS + 'BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg',
+      { maxNativeZoom: 8, maxZoom: 18, className: 'basemap', crossOrigin: true }).addTo(map);
+    L.tileLayer(GIBS + 'Reference_Features_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png',
+      { maxNativeZoom: 13, maxZoom: 18, className: 'basemap-ref', crossOrigin: true }).addTo(map);
     L.control.scale({ position: 'bottomright', imperial: false, maxWidth: 120 }).addTo(map);
     overlay = L.imageOverlay(ovr(D.manifest.dates[0]) || BLANK, b, { className: 'map-overlay-img', interactive: false }).addTo(map);
     if (D.manifest.peat) {
