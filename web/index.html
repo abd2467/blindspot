@@ -222,23 +222,92 @@
       <div class="sec-b">
         <ol class="steps">
           <li><span class="st-n">01</span><div><div class="st-t">Prepare</div><div class="st-x">Stream only our 50 km study window from each NISAR GCOV image, HH and HV, and average it onto one 60 m grid.</div></div></li>
-          <li><span class="st-n">02</span><div><div class="st-t">Normalise</div><div class="st-x">Divide each date by its scene-wide ratio to the June and July reference, so rain, soil moisture and processing changes cancel.</div></div></li>
+          <li><span class="st-n">02</span><div><div class="st-t">Normalise</div><div class="st-x">Divide each date by its scene-wide ratio to the June and July reference, so rain, soil moisture and processing changes cancel. Pixels already drying within the reference are set aside.</div></div></li>
           <li><span class="st-n">03</span><div><div class="st-t">Detect</div><div class="st-x">A sequential omnibus test (Conradsen 2016; Canty 2020) flags change at a 1% false-alarm rate. HV must stay at least 1 dB down for two dates; patches of 1 ha or more are kept.</div></div></li>
-          <li><span class="st-n">04</span><div><div class="st-t">Cross-check</div><div class="st-x">A patch counts as recorded if a VIIRS or MODIS hotspot lies within 1 km of it between the previous radar date and the change date.</div></div></li>
+          <li><span class="st-n">04</span><div><div class="st-t">Cross-check</div><div class="st-x">A patch counts as recorded if a VIIRS or MODIS hotspot lies within 1 km of it between the previous radar date and the change date. Water and swath-edge patches are left out of the headline.</div></div></li>
           <li><span class="st-n">05</span><div><div class="st-t">Validate</div><div class="st-x">Synthetic burns test what we can detect; a Monte Carlo run gives the range; a labelled sample gives the error-adjusted area with a 95% interval (Olofsson 2014).</div></div></li>
         </ol>
       </div>
     </section>
 
     <section class="sec">
-      <div class="sec-h"><div class="sec-n">02</div><h2>How sure are we</h2></div>
+      <div class="sec-h"><div class="sec-n">02</div><h2>The maths</h2></div>
+      <div class="sec-b">
+        <p>No machine learning: every step is a closed-form statistical test, a measured threshold or a count, so each number can be traced and rerun. <var>X</var><sub><i>t</i></sub> is radar power on date <i>t</i> (linear, &gamma;&#8304;), per pixel and band (HH, HV).</p>
+
+        <div class="eq-block">
+          <div class="eq-t">Scene normalisation</div>
+          <div class="eq"><span><var>X&#771;</var><sub><i>t</i></sub> = <var>X</var><sub><i>t</i></sub> &frasl; median<sub>land</sub>(<var>X</var><sub><i>t</i></sub> &frasl; <var>X&#772;</var><sub>ref</sub>)</span><span class="eq-n">(1)</span></div>
+          <p class="eq-x"><var>X&#772;</var><sub>ref</sub> is the mean of the four June and July reference dates. Dividing by the scene-wide median ratio cancels rain, soil moisture and calibration shifts that move the whole scene at once.</p>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-t">Change in decibels</div>
+          <div class="eq"><span><i>r</i><sub><i>t</i></sub> = 10 log<sub>10</sub>(<var>X&#771;</var><sup>HV</sup><sub><i>t</i></sub> &frasl; <var>X&#772;</var><sup>HV</sup><sub>ref</sub>)</span><span class="eq-n">(2)</span></div>
+          <p class="eq-x">After a 3&times;3 boxcar average. Canopy loss lowers HV, so change must have <i>r</i><sub><i>t</i></sub> &le; &minus;1 dB on at least two consecutive dates.</p>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-t">Effective number of looks, measured</div>
+          <div class="eq"><span><i>m</i> = &Sigma;<sub>pixels</sub> <span class="ov">X</span><sup>2</sup> &frasl; &Sigma;<sub>pixels</sub> <i>s</i><sup>2</sup> &minus; 1&frasl;<i>n</i><sub>ref</sub></span><span class="eq-n">(3)</span></div>
+          <p class="eq-x">Mean and variance of each land pixel over the <i>n</i><sub>ref</sub> = 4 reference dates, pooled, with a finite-sample correction. Measured, not assumed: on the real stack <i>m</i> &asymp; 181 after averaging.</p>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-t">Sequential omnibus test (Conradsen 2016; Canty 2020)</div>
+          <div class="eq"><span>ln <i>R</i><sub><i>j</i></sub> = <i>m</i> [ <i>j</i> ln <i>j</i> &minus; (<i>j</i>&minus;1) ln(<i>j</i>&minus;1) + (<i>j</i>&minus;1) ln <i>S</i><sub><i>j</i>&minus;1</sub> + ln <var>X&#771;</var><sub><i>j</i></sub> &minus; <i>j</i> ln <i>S</i><sub><i>j</i></sub> ]</span><span class="eq-n">(4)</span></div>
+          <div class="eq"><span>&minus;2 (ln <i>R</i><sub><i>j</i></sub><sup>HH</sup> + ln <i>R</i><sub><i>j</i></sub><sup>HV</sup>) ~ &chi;<sup>2</sup>(2) &nbsp; under no change</span><span class="eq-n">(5)</span></div>
+          <p class="eq-x"><i>S</i><sub><i>j</i></sub> = <var>X&#771;</var><sub>1</sub> + &hellip; + <var>X&#771;</var><sub><i>j</i></sub>. <i>R</i><sub><i>j</i></sub> tests &ldquo;date <i>j</i> differs from all dates before it&rdquo;; the two bands are independent, so their statistics add. A pixel changes at the first <i>j</i> where <i>p</i> &lt; &alpha; = 0.01, the whole-series omnibus test also rejects, HV fell, and rule (2) holds. Connected changed pixels form patches; patches under 1 ha are dropped.</p>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-t">Cross-check and headline</div>
+          <div class="eq"><span>recorded(<i>P</i>) &hArr; &exist; hotspot <i>h</i>: <i>d</i>(<i>h</i>, <i>P</i>) &le; <i>b</i> and <i>t</i><sub>prev</sub> &minus; <i>s</i> &lt; <i>t</i><sub><i>h</i></sub> &le; <i>t</i><sub>change</sub></span><span class="eq-n">(6)</span></div>
+          <div class="eq"><span>share = &Sigma;<sub><i>P</i>: none</sub> <i>A</i><sub><i>P</i></sub> &frasl; &Sigma;<sub><i>P</i>: eligible</sub> <i>A</i><sub><i>P</i></sub></span><span class="eq-n">(7)</span></div>
+          <p class="eq-x">Central estimate: buffer <i>b</i> = 1 km, date slack <i>s</i> = 0. Eligible patches have full fire-data coverage and no water or swath-edge flag. Area-weighted, so one large patch counts more than a speck.</p>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-t">Monte Carlo range</div>
+          <div class="eq"><span>share<sub><i>k</i></sub> = (7) with <i>h</i> + &epsilon;<sub><i>k</i></sub>, &nbsp;<i>b</i><sub><i>k</i></sub> ~ U(0.5, 2) km, &nbsp;<i>s</i><sub><i>k</i></sub> ~ U{0,&hellip;,12} days, &nbsp;<i>k</i> = 1&hellip;300</span><span class="eq-n">(8)</span></div>
+          <p class="eq-x">&epsilon;<sub><i>k</i></sub> moves each hotspot uniformly within its pixel footprint (VIIRS &plusmn;187.5 m, MODIS &plusmn;500 m). We report the 5th to 95th percentile of the 300 shares as the range.</p>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-t">Error-adjusted area (Olofsson 2014)</div>
+          <div class="eq"><span><i>&Acirc;</i> = <i>A</i><sub>tot</sub> &Sigma;<sub><i>i</i></sub> <i>W</i><sub><i>i</i></sub> <i>n</i><sub><i>i</i>c</sub> &frasl; <i>n</i><sub><i>i</i>&middot;</sub>, &nbsp; 95% CI = <i>&Acirc;</i> &plusmn; 1.96 SE</span><span class="eq-n">(9)</span></div>
+          <p class="eq-x">From a stratified sample of points labelled on optical imagery: <i>W</i><sub><i>i</i></sub> is the map share of stratum <i>i</i>, <i>n</i><sub><i>i</i>c</sub> the points in it labelled as change. Corrects the mapped area for omission and commission errors.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">03</div><h2>Where uncertainty comes from, and what we do</h2></div>
+      <div class="sec-b">
+        <div class="utab" role="table" aria-label="Sources of uncertainty and how BlindSpot handles them">
+          <div class="ur uh" role="row"><span role="columnheader">Source</span><span role="columnheader">What we do</span></div>
+          <div class="ur" role="row"><span role="cell">Radar speckle</span><span role="cell">3&times;3 averaging, measured looks (3), a 1% false-alarm test (4&ndash;5), two-date persistence and a 1 ha minimum patch.</span></div>
+          <div class="ur" role="row"><span role="cell">Rain, soil moisture, calibration</span><span role="cell">Per-date scene normalisation (1). Late-October change is flagged <i>rain</i>. The 28 Oct processing change moves stable forest by only about 0.2 dB.</span></div>
+          <div class="ur" role="row"><span role="cell">Seasonal drying</span><span role="cell">Pixels already falling 1 dB or more within the reference dates are excluded. 17 Aug, the first pass after a 24-day gap, is reported separately: the share is given with and without it.</span></div>
+          <div class="ur" role="row"><span role="cell">Water and the swath edge</span><span role="cell">Patches touching water or within 5 km of the radar&rsquo;s no-data edge are flagged and left out of the headline.</span></div>
+          <div class="ur" role="row"><span role="cell">What we can detect</span><span role="cell">Synthetic test: burns of 1 to 50 ha and 2 to 6 dB injected into real stable radar, three trials each, plus the false-alarm rate on unchanged land.</span></div>
+          <div class="ur" role="row"><span role="cell">Hotspot position and timing</span><span role="cell">Monte Carlo over footprint jitter, buffer and date slack (8); the headline is a range, never a single point.</span></div>
+          <div class="ur" role="row"><span role="cell">Missing fire data</span><span role="cell">Patches whose window is not fully covered by VIIRS are labelled <i>insufficient fire data</i> and left out.</span></div>
+          <div class="ur" role="row"><span role="cell">Mapping error</span><span role="cell">Labelled stratified sample and error-adjusted area with a 95% interval (9); RADD alerts as an independent check.</span></div>
+          <div class="ur" role="row"><span role="cell">Interpretation</span><span role="cell">Two labels kept apart. &ldquo;No hotspot recorded&rdquo; is an observation, not proof of fire or of who caused it.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">04</div><h2>How sure are we</h2></div>
       <div class="sec-b">
         <dl id="sure" class="sure"></dl>
       </div>
     </section>
 
     <section class="sec">
-      <div class="sec-h"><div class="sec-n">03</div><h2>Two labels, kept apart</h2></div>
+      <div class="sec-h"><div class="sec-n">05</div><h2>Two labels, kept apart</h2></div>
       <div class="sec-b">
         <p>Every patch gets an automatic observation label and, after review, an interpretation. We never call an unmatched patch a missed fire.</p>
         <div class="labels">
@@ -249,7 +318,7 @@
     </section>
 
     <section class="sec">
-      <div class="sec-h"><div class="sec-n">04</div><h2>Data</h2></div>
+      <div class="sec-h"><div class="sec-n">06</div><h2>Data</h2></div>
       <div class="sec-b">
         <ul class="sources">
           <li><a href="https://search.earthdata.nasa.gov">NISAR L2 GCOV (NASA, ASF DAAC)</a><span>Radar backscatter, 11 dates</span></li>
