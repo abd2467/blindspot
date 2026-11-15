@@ -639,7 +639,7 @@ P0637,medium,unreviewed,false,,
 P0638,medium,unreviewed,false,,
 P0639,medium,unreviewed,false,,
 P0640,medium,unreviewed,false,,
-P0641,medium,unreviewed,false,,
+P0641,medium,other_disturbance,false,"Sentinel-2 L2A 21 Jun vs 19 Sep 2026: open ground already thinly vegetated on 21 Jun, lighter and drier olive-brown on 19 Sep; no burn scar inside the outline in false colour or SWIR; gradual radar decline from June; no hotspot in window; likely seasonal drying",https://browser.dataspace.copernicus.eu
 P0642,medium,unreviewed,false,,
 P0643,medium,unreviewed,false,,
 P0644,medium,unreviewed,false,,
